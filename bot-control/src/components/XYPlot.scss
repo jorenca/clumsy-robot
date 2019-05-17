@@ -1,0 +1,17 @@
+.xyplot-container {
+  border: 1px solid gray;
+  overflow: hidden;
+  position: relative;
+
+  .xyplot-marker {
+    background-color: red;
+    position: absolute;
+  }
+
+  .xyplot-midpoint {
+    background-color: blue;
+    position: absolute;
+    width: 10px;
+    height: 10px;
+  }
+}
