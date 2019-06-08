@@ -74,9 +74,9 @@ webApp.use(express.static(path.join(__dirname, '../bot-control/build')));
 webApp.get('/telemetry', telemetryEvents.init);
 webApp.get('/move/:xr/:xrpm/:yr/:yrpm', (req, res) => {
   const { xr, xrpm, yr, yrpm } = req.params;
-  const msg = `M ${xr.padStart(3, '0')} ${xrpm.padStart(2, '0')} ${yr.padStart(3, '0')} ${yrpm.padStart(2, '0')}`;
+  const msg = `M ${xr.padStart(5, ' ')} ${xrpm.padStart(2, ' ')} ${yr.padStart(5, ' ')} ${yrpm.padStart(2, ' ')}`;
   console.log('SENDING MOVE ' + msg);
-  
+
   boardConnection.send(msg);
 
   res.send(req.params)
