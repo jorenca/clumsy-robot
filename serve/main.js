@@ -60,7 +60,6 @@ function handleTelemetry(line) {
 let boardConnection;
 connectToBoard().then(conn => {
   conn.addListener(line => {
-    if (line[0] === 'H') return; // movement debugging aid
     console.log(`> ${line}`);
     //handleTelemetry(line);
   });
@@ -73,9 +72,14 @@ const webPort = 3000
 
 webApp.use(express.static(path.join(__dirname, '../bot-control/build')));
 webApp.get('/telemetry', telemetryEvents.init);
-webApp.get('/move', () => {
-  boardConnection.send('L100');
-  console.log('SENDING MOVE');
+webApp.get('/move/:xr/:xrpm/:yr/:yrpm', (req, res) => {
+  const { xr, xrpm, yr, yrpm } = req.params;
+  const msg = `M ${xr.padStart(3, '0')} ${xrpm.padStart(2, '0')} ${yr.padStart(3, '0')} ${yrpm.padStart(2, '0')}`;
+  console.log('SENDING MOVE ' + msg);
+  
+  boardConnection.send(msg);
+
+  res.send(req.params)
 });
 
 webApp.listen(webPort, () => console.log(`Web app listening on port ${webPort}.`))
