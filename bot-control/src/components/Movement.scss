@@ -1,0 +1,18 @@
+.movement-container {
+  width: 400px;
+  border: 1px solid gray;
+  padding: 5px;
+
+  .speed-slider input {
+    width: 90%;
+    padding-bottom: 20px;
+  }
+
+  .keypad {
+    width: 100%;
+
+    table {
+      margin: 0 auto;
+    }
+  }
+}
