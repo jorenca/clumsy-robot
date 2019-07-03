@@ -3,6 +3,7 @@ const path = require('path');
 const SerialPort = require('serialport')
 const Readline = require('@serialport/parser-readline')
 const SSE = require('express-sse');
+const i2c = require('i2c-bus');
 var telemetryEvents = new SSE();
 
 
@@ -61,11 +62,21 @@ let boardConnection;
 connectToBoard().then(conn => {
   conn.addListener(line => {
     console.log(`> ${line}`);
-    //handleTelemetry(line);
+    handleTelemetry(line);
   });
 
   boardConnection = conn;
 });
+
+const PROXIMITY_SENSOR_I2C_ADDR = 0x40;
+const PROXIMITY_SENSOR_I2c_DATA_REG = 0x5e;
+const i2c1 = i2c.openSync(1);
+
+function sendProximityData() {
+  const proximity = i2c1.readByteSync(PROXIMITY_SENSOR_I2C_ADDR, PROXIMITY_SENSOR_I2CDATA_RED);
+  telemetryEvents.send({ proximity });
+}
+setInterval(sendProximityData, 500);
 
 const webApp = express()
 const webPort = 3000
