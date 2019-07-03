@@ -10,8 +10,8 @@ var telemetryEvents = new SSE();
 async function connectToBoard() {
   const portsList = await SerialPort.list();
   console.log('Available COM ports:', portsList);
-  console.log('Using telemetry provider on COM port', portsList[0]);
-  const comPort = new SerialPort(portsList[0].comName, { baudRate: 115200 });
+  console.log('Using telemetry provider on COM port', portsList[1]);
+  const comPort = new SerialPort(portsList[1].comName, { baudRate: 115200 });
   const comParser = new Readline();
   comPort.pipe(comParser);
 
@@ -61,7 +61,12 @@ function handleTelemetry(line) {
 let boardConnection;
 connectToBoard().then(conn => {
   conn.addListener(line => {
+
+   // if (line[0] === 'D') return; // movement debugging aid
+
     console.log(`> ${line}`);
+
+    if(line[0]!= 'H') return;
     handleTelemetry(line);
   });
 
@@ -69,11 +74,11 @@ connectToBoard().then(conn => {
 });
 
 const PROXIMITY_SENSOR_I2C_ADDR = 0x40;
-const PROXIMITY_SENSOR_I2c_DATA_REG = 0x5e;
+const PROXIMITY_SENSOR_I2C_DATA_REG = 0x5e;
 const i2c1 = i2c.openSync(1);
 
 function sendProximityData() {
-  const proximity = i2c1.readByteSync(PROXIMITY_SENSOR_I2C_ADDR, PROXIMITY_SENSOR_I2CDATA_RED);
+  const proximity = i2c1.readByteSync(PROXIMITY_SENSOR_I2C_ADDR, PROXIMITY_SENSOR_I2C_DATA_REG);
   telemetryEvents.send({ proximity });
 }
 setInterval(sendProximityData, 500);
@@ -83,6 +88,7 @@ const webPort = 3000
 
 webApp.use(express.static(path.join(__dirname, '../bot-control/build')));
 webApp.get('/telemetry', telemetryEvents.init);
+
 webApp.get('/move/:xr/:xrpm/:yr/:yrpm', (req, res) => {
   const { xr, xrpm, yr, yrpm } = req.params;
   const msg = `M ${xr.padStart(5, ' ')} ${xrpm.padStart(2, ' ')} ${yr.padStart(5, ' ')} ${yrpm.padStart(2, ' ')}`;
