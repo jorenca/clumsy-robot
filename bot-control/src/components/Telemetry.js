@@ -16,9 +16,11 @@ class Telemetry extends React.Component {
     telemetrySource.addEventListener('message', e => this.updateTelemetry(e.data), false);
   }
 
-  updateTelemetry(data) {
+  updateTelemetry(rawData) {
+    const data = JSON.parse(rawData);
     // console.log('telemetery data received', data);
-    this.setState(JSON.parse(data));
+    this.setState(data);
+    this.props.shareData(data);
   }
 
   render() {

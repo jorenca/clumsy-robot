@@ -2,14 +2,25 @@ import React from 'react';
 import './App.css';
 import Telemetry from './components/Telemetry';
 import Movement from './components/Movement';
+import CameraFeed from './components/CameraFeed';
 
 class App extends React.Component {
+  state = {
+    sharedTelemetry: {}
+  };
+
+  shareTelemetry = data => this.setState({ sharedTelemetry: data });
 
   render() {
+    const { sharedTelemetry } = this.state;
+
     return (
       <div className="App">
-        <Movement />
-        <Telemetry />
+        <CameraFeed proximity={sharedTelemetry.proximity} />
+        <div>
+          <Movement />
+          <Telemetry shareData={this.shareTelemetry} />
+        </div>
       </div>
     );
   }
