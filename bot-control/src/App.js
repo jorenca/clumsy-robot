@@ -9,7 +9,9 @@ class App extends React.Component {
     sharedTelemetry: {}
   };
 
-  shareTelemetry = data => this.setState({ sharedTelemetry: data });
+  shareTelemetry = data => this.setState({
+    sharedTelemetry: { ...this.state.sharedTelemetry, ...data }
+  });
 
   render() {
     const { sharedTelemetry } = this.state;
