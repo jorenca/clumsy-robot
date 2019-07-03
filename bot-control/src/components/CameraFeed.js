@@ -6,14 +6,23 @@ const CameraFeed = ({ proximity }) =>
   <ProximityGauge proximity={Number.parseInt(proximity || '255')} />
 </div>;
 
+const MAX_SENSOR_DIST = 50; //cm
 const MAX_SENSOR_READING = 200;
+const MIN_SENSOR_DIST = 4; //cm
+const MIN_SENSOR_READING = 10;
+const SENSOR_READING_RANGE = MAX_SENSOR_READING - MIN_SENSOR_READING;
+const SENSOR_DIST_RANGE = MAX_SENSOR_DIST - MIN_SENSOR_DIST;
 const ProximityGauge = ({ proximity }) => {
-  const valueInBounds = Math.min(proximity, MAX_SENSOR_READING);
-  const text = proximity > MAX_SENSOR_READING ? '>50cm or <4cm' : proximity + 'cm';
+  const valueInBounds = Math.max(Math.min(proximity, MAX_SENSOR_READING), MIN_SENSOR_READING);
+  const percentage = (valueInBounds - MIN_SENSOR_READING) / SENSOR_READING_RANGE;
+
+  const text = proximity > MAX_SENSOR_READING ? '>50cm or <4cm' : (MIN_SENSOR_READING + percentage * SENSOR_DIST_RANGE) + 'cm';
 
   return (
     <div className="proximity-gauge-container">
-      <input type="range" min="10" max="200" value={proximity} orient="vertical" name="proximity-gauge-slider" />
+      <div className="gauge-rail">
+        <div className="gauge-block" style={{ top:  (1 - percentage) * 90 /* slider height is 10% */ + '%' }} />
+      </div>
       <div>{text}</div>
     </div>
   );

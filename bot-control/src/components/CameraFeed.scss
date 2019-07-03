@@ -5,12 +5,27 @@
 }
 
 .proximity-gauge-container {
-  height: 90%;
+  height: 100%;
+  width: 40px;
 
   input[type=range][orient=vertical] {
     writing-mode: bt-lr; /* IE */
     -webkit-appearance: slider-vertical; /* WebKit */
     width: 8px;
     height: 100%;
+  }
+
+  .gauge-rail {
+    height: 90%;
+
+    .gauge-block {
+      position: relative;
+
+      transition: top 0.1s linear;
+
+      height: 10%;
+      width: 10px;
+      background-color: gray;
+    }
   }
 }
