@@ -12,7 +12,7 @@ const MIN_SENSOR_DIST = 4; //cm
 const MIN_SENSOR_READING = 10;
 const SENSOR_READING_RANGE = MAX_SENSOR_READING - MIN_SENSOR_READING;
 const SENSOR_DIST_RANGE = MAX_SENSOR_DIST - MIN_SENSOR_DIST;
-const distReadingMapper = x => 0.238 * x - 1.39;
+const distReadingMapper = x => 0.237 * x - 0.39;
 const ProximityGauge = ({ proximity }) => {
   const valueInBounds = Math.max(Math.min(proximity, MAX_SENSOR_READING), MIN_SENSOR_READING);
   const percentage = (valueInBounds - MIN_SENSOR_READING) / SENSOR_READING_RANGE;
