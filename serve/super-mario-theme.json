@@ -1,0 +1,116 @@
+[
+  { "frequency": 660, "timeMs": 100, "delay": 150 },
+  { "frequency": 660, "timeMs": 100, "delay": 300 },
+  { "frequency": 660, "timeMs": 100, "delay": 300 },
+  { "frequency": 510, "timeMs": 100, "delay": 100 },
+  { "frequency": 660, "timeMs": 100, "delay": 300 },
+  { "frequency": 770, "timeMs": 100, "delay": 550 },
+  { "frequency": 380, "timeMs": 100, "delay": 575 },
+
+  { "frequency": 510, "timeMs": 100, "delay": 450 },
+  { "frequency": 380, "timeMs": 100, "delay": 400 },
+  { "frequency": 320, "timeMs": 100, "delay": 500 },
+  { "frequency": 440, "timeMs": 100, "delay": 300 },
+  { "frequency": 480, "timeMs": 80, "delay":330 },
+  { "frequency": 450, "timeMs": 100, "delay": 150 },
+  { "frequency": 430, "timeMs": 100, "delay": 300 },
+  { "frequency": 380, "timeMs": 100, "delay": 200 },
+  { "frequency": 660, "timeMs": 80, "delay":200 },
+  { "frequency": 760, "timeMs": 50, "delay":150 },
+  { "frequency": 860, "timeMs": 100, "delay": 300 },
+  { "frequency": 700, "timeMs": 80, "delay":150 },
+  { "frequency": 760, "timeMs": 50, "delay":350 },
+  { "frequency": 660, "timeMs": 80, "delay":300 },
+  { "frequency": 520, "timeMs": 80, "delay":150 },
+  { "frequency": 580, "timeMs": 80, "delay":150 },
+  { "frequency": 480, "timeMs": 80, "delay":500 },
+  { "frequency": 510, "timeMs": 100, "delay": 450 },
+  { "frequency": 380, "timeMs": 100, "delay": 400 },
+  { "frequency": 320, "timeMs": 100, "delay": 500 },
+  { "frequency": 440, "timeMs": 100, "delay": 300 },
+  { "frequency": 480, "timeMs": 80, "delay":330 },
+  { "frequency": 450, "timeMs": 100, "delay": 150 },
+  { "frequency": 430, "timeMs": 100, "delay": 300 },
+  { "frequency": 380, "timeMs": 100, "delay": 200 },
+  { "frequency": 660, "timeMs": 80, "delay":200 },
+  { "frequency": 760, "timeMs": 50, "delay":150 },
+  { "frequency": 860, "timeMs": 100, "delay": 300 },
+  { "frequency": 700, "timeMs": 80, "delay":150 },
+  { "frequency": 760, "timeMs": 50, "delay":350 },
+  { "frequency": 660, "timeMs": 80, "delay":300 },
+  { "frequency": 520, "timeMs": 80, "delay":150 },
+  { "frequency": 580, "timeMs": 80, "delay":150 },
+  { "frequency": 480, "timeMs": 80, "delay":500 },
+  { "frequency": 500, "timeMs": 100, "delay": 300 },
+
+  { "frequency": 760, "timeMs": 100, "delay": 100 },
+  { "frequency": 720, "timeMs": 100, "delay": 150 },
+  { "frequency": 680, "timeMs": 100, "delay": 150 },
+  { "frequency": 620, "timeMs": 150, "delay": 300 },
+
+  { "frequency": 650, "timeMs": 150, "delay": 300 },
+  { "frequency": 380, "timeMs": 100, "delay": 150 },
+  { "frequency": 430, "timeMs": 100, "delay": 150 },
+
+  { "frequency": 500, "timeMs": 100, "delay": 300 },
+  { "frequency": 430, "timeMs": 100, "delay": 150 },
+  { "frequency": 500, "timeMs": 100, "delay": 100 },
+  { "frequency": 570, "timeMs": 100, "delay": 220 },
+
+  { "frequency": 500, "timeMs": 100, "delay": 300 },
+
+  { "frequency": 760, "timeMs": 100, "delay": 100 },
+  { "frequency": 720, "timeMs": 100, "delay": 150 },
+  { "frequency": 680, "timeMs": 100, "delay": 150 },
+  { "frequency": 620, "timeMs": 150, "delay": 300 },
+
+  { "frequency": 650, "timeMs": 200, "delay": 300 },
+
+  { "frequency": 102, "timeMs": 80, "delay": 300 },
+  { "frequency": 102, "timeMs": 80, "delay": 150 },
+  { "frequency": 102, "timeMs": 80, "delay": 300 },
+
+  { "frequency": 380, "timeMs": 100, "delay": 300 },
+  { "frequency": 500, "timeMs": 100, "delay": 300 },
+
+  { "frequency": 760, "timeMs": 100, "delay": 100 },
+  { "frequency": 720, "timeMs": 100, "delay": 150 },
+  { "frequency": 680, "timeMs": 100, "delay": 150 },
+  { "frequency": 620, "timeMs": 150, "delay": 300 },
+
+  { "frequency": 650, "timeMs": 150, "delay": 300 },
+  { "frequency": 380, "timeMs": 100, "delay": 150 },
+  { "frequency": 430, "timeMs": 100, "delay": 150 },
+
+  { "frequency": 500, "timeMs": 100, "delay": 300 },
+  { "frequency": 430, "timeMs": 100, "delay": 150 },
+  { "frequency": 500, "timeMs": 100, "delay": 100 },
+  { "frequency": 570, "timeMs": 100, "delay": 420 },
+
+  { "frequency": 585, "timeMs": 100, "delay": 450 },
+
+  { "frequency": 550, "timeMs": 100, "delay": 420 },
+
+  { "frequency": 500, "timeMs": 100, "delay": 360 },
+
+  { "frequency": 380, "timeMs": 100, "delay": 300 },
+  { "frequency": 500, "timeMs": 100, "delay": 300 },
+  { "frequency": 500, "timeMs": 100, "delay": 150 },
+  { "frequency": 500, "timeMs": 100, "delay": 300 },
+
+  { "frequency": 500, "timeMs": 100, "delay": 300 },
+
+  { "frequency": 760, "timeMs": 100, "delay": 100 },
+  { "frequency": 720, "timeMs": 100, "delay": 150 },
+  { "frequency": 680, "timeMs": 100, "delay": 150 },
+  { "frequency": 620, "timeMs": 150, "delay": 300 },
+
+  { "frequency": 650, "timeMs": 150, "delay": 300 },
+  { "frequency": 380, "timeMs": 100, "delay": 150 },
+  { "frequency": 430, "timeMs": 100, "delay": 150 },
+
+  { "frequency": 500, "timeMs": 100, "delay": 300 },
+  { "frequency": 430, "timeMs": 100, "delay": 150 },
+  { "frequency": 500, "timeMs": 100, "delay": 100 },
+  { "frequency": 570, "timeMs": 100, "delay": 220 }
+]

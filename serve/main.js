@@ -6,6 +6,7 @@ const SSE = require('express-sse');
 const i2c = require('i2c-bus');
 var telemetryEvents = new SSE();
 
+const superMarioThemeSong = require('./super-mario-theme.json');
 
 async function connectToBoard() {
   const portsList = await SerialPort.list();
@@ -18,7 +19,10 @@ async function connectToBoard() {
 
   return {
     addListener: callb => comParser.on('data', callb),
-    send: data => comPort.write(data)
+    send: data => {
+      console.log(`< ${data} (message length ${data.length})`);
+      comPort.write(data);
+    }
   };
 };
 
@@ -62,12 +66,9 @@ function handleTelemetry(line) {
 let boardConnection;
 connectToBoard().then(conn => {
   conn.addListener(line => {
-
-   // if (line[0] === 'D') return; // movement debugging aid
-
     console.log(`> ${line}`);
 
-    if(line[0] == 'H') {
+    if (line[0] == 'H') {
       handleTelemetry(line);
     }
   });
@@ -93,39 +94,47 @@ const webPort = 3000
 webApp.use(express.static(path.join(__dirname, '../bot-control/build')));
 webApp.get('/telemetry', telemetryEvents.init);
 
-const ACCELERATION_TIME = 1000; //ms
+const ACCELERATION_TIME = 500; //ms
+const ACCELERATION_DIVS = 5;
+const accelerationLerp = (targetRpm, div, totalDivs) => {
+  const rpm = targetRpm * (div / totalDivs);
+  const revs = rpm * (ACCELERATION_TIME / totalDivs) / 60000;
+  return { rpm: rpm.toPrecision(3), revs: revs.toPrecision(2) };
+};
 const doMove = ({ xr, xrpm, yr, yrpm, shouldAddMore }) => {
   let addition = '';
   if (shouldAddMore) {
-    addition += doMove({
-      xr: '' + 0.02,
-      xrpm: '' + (Number(xrpm) / 4),
-      yr: '' + 0.02,
-      yrpm: '' + (Number(yrpm) / 4),
-      shouldAddMore: false
-    }) + ':' + doMove({
-      xr: '' + 0.02,
-      xrpm: '' + (Number(xrpm) / 3),
-      yr: '' + 0.02,
-      yrpm: '' + (Number(yrpm) / 3),
-      shouldAddMore: false
-    }) + ':' + doMove({
-      xr: '' + 0.02,
-      xrpm: '' + (Number(xrpm) / 2),
-      yr: '' + 0.02,
-      yrpm: '' + (Number(yrpm) / 2),
-      shouldAddMore: false
-    }) + ':';
+    for (let i = 1; i < ACCELERATION_DIVS; i++) {
+      const lerp = accelerationLerp(xrpm, i, ACCELERATION_DIVS);
+      addition += doMove({
+        xr: '' + lerp.revs,
+        xrpm: '' + lerp.rpm,
+        yr: '' + lerp.revs,
+        yrpm: '' + lerp.rpm,
+        shouldAddMore: false
+      }) + ':';
+    }
   }
 
   const msg = `M ${xr} ${xrpm} ${yr} ${yrpm}`;
   return addition + msg;
 };
 webApp.get('/move/:xr/:xrpm/:yr/:yrpm', (req, res) => {
-const move = doMove({ ...req.params, shouldAddMore: true });
+  const move = doMove({ ...req.params, shouldAddMore: false }) + ' ;';
+  boardConnection.send(move);
+  res.send(req.params)
+});
 
-  console.log('SENDING MOVE ' + move);
-  boardConnection.send(move + ' ;');
+const doDirectMove = ({ timeMs, frequency, dir }) => `DR ${timeMs} ${frequency} ${dir}`;
+webApp.get('/sing', (req, res) => {
+  let time = 0;
+  superMarioThemeSong.forEach(note => {
+    const move = doDirectMove({ ...note, dir: 1 });
+    const startAfter = time;
+    setTimeout(() => boardConnection.send(move + ' ;'), startAfter);
+    time += note.delay * 1.2;
+  });
+
   res.send(req.params)
 });
 
