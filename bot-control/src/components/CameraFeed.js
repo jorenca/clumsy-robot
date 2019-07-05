@@ -1,15 +1,17 @@
 import React from 'react';
 import './CameraFeed.scss';
 
+const CAMERA_FEED_ADDR = 'http://192.168.100.195:8080/stream/video.mjpeg'; // FIXME GEORGI HARDCODED URL
 const CameraFeed = ({ proximity }) =>
 <div className="feed-container">
+  <img alt="feed" src={CAMERA_FEED_ADDR} />
   <ProximityGauge proximity={Number.parseInt(proximity || '255')} />
 </div>;
 
 const MAX_SENSOR_READING = 203;
 const MIN_SENSOR_READING = 18;
 const SENSOR_READING_RANGE = MAX_SENSOR_READING - MIN_SENSOR_READING;
-const distReadingMapper = x => 0.237 * x - 0.39;
+const distReadingMapper = x => (0.237 * x - 0.39).toPrecision(3);
 const ProximityGauge = ({ proximity }) => {
   const valueInBounds = Math.max(Math.min(proximity, MAX_SENSOR_READING), MIN_SENSOR_READING);
   const distCm = distReadingMapper(valueInBounds);
@@ -22,7 +24,7 @@ const ProximityGauge = ({ proximity }) => {
       <div className="gauge-rail">
         <div className="gauge-block" style={{ top:  (1 - percentage) * 90 /* slider height is 10% */ + '%' }} />
       </div>
-      <div>{text}</div>
+      <div className="gauge-text">{text}</div>
     </div>
   );
 };

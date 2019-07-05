@@ -1,12 +1,11 @@
 .feed-container {
-  width: 600px;
-  height: 700px;
-  border: 1px solid black;
 }
 
 .proximity-gauge-container {
   height: 100%;
   width: 40px;
+  position: absolute;
+  top: 0;
 
   .gauge-rail {
     height: 90%;
@@ -20,5 +19,9 @@
       width: 20px;
       background-color: #0c89d2;
     }
+  }
+
+  .gauge-text {
+    background-color: rgba(200, 200, 200, 0.5);
   }
 }
