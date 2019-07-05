@@ -21,17 +21,16 @@ function MotorCtrl(motor: number) {
             }
 
             const work = workQueue.get(0);
-            const steps = work[0];
+            const timeMs = work[0];
             const speed = work[1]; // speed is measured in steps per second
             const dir = work[2];
-            const isSpeedup = work[3] === 1;
 
             const pulseDuration = 1000000 / speed;
             pins.digitalWritePin(MOTOR_DIR_PINS[motor], dir);
 
             pins.analogWritePin(MOTOR_STEP_PIN_A[motor], 512);
             pins.analogSetPeriod(MOTOR_STEP_PIN_A[motor], pulseDuration);
-            basic.pause(steps * 1000 / speed); // wait to complete
+            basic.pause(timeMs); // wait to complete
 
             workQueue.shift();
             if (workQueue.length === 0) {
@@ -47,9 +46,12 @@ function MotorCtrl(motor: number) {
             }
             const steps = (revs > 0 ? revs : -revs) * STEPS_PER_REV;
             const speed = rpm * STEPS_PER_REV / 60;
+            const timeMs = steps * 1000 / speed; // TODO GEORGI cleanup calc
 
-            workQueue.push([steps, speed, dir, 0]);
+            workQueue.push([timeMs, speed, dir]);
         },
+        addDirectMove: (timeMs: number, speed: number, dir: number) =>
+            workQueue.push([timeMs, speed, dir]),
         state: (): boolean => workQueue.length > 0
     }
 }
@@ -96,7 +98,7 @@ function omgSplit(inp: string, delimiter: string): string[] {
     return res;
 }
 function handleMoveRequest(req: string) {
-    serial.writeString('executing - ' + req + '\n');
+    serial.writeString('MOVE - ' + req + '\n');
     // M  -1.1 60 009.0 60
     const params = omgSplit(req, " ");
     const leftRevs = parseFloat(params[1]);
@@ -113,11 +115,30 @@ function handleMoveRequest(req: string) {
     }
 }
 
+function handleDirectMoveRequest(req: string) {
+    serial.writeString('DIRECT MOVE - ' + req + '\n');
+    // D[LR] timeMs freq dir
+    const params = omgSplit(req, " ");
+    const motor = params[0].charAt(1);
+    const timeMs = parseInt(params[1]);
+    const freq = parseInt(params[2]);
+    const dir = parseInt(params[3]);
+
+    serial.writeString('DIRECT - ' + timeMs + ' - ' + freq + '\n');
+    // fixme left right
+    motorCtrl.enable();
+    motorCtrl.left.addDirectMove(timeMs, freq, dir);
+}
+
 serial.setRxBufferSize(128);
 serial.onDataReceived(";", function () {
     const line = serial.readString();
     if (line.charAt(0) === 'M') { // M  -1.1 60 009.0 60
         omgSplit(line, ":").forEach(handleMoveRequest);
+    }
+
+    if (line.charAt(0) == 'D') {
+        omgSplit(line, ":").forEach(handleDirectMoveRequest);
     }
 
     led.toggle(1, 0);
