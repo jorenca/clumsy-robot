@@ -10,8 +10,9 @@ var telemetryEvents = new SSE();
 async function connectToBoard() {
   const portsList = await SerialPort.list();
   console.log('Available COM ports:', portsList);
-  console.log('Using telemetry provider on COM port', portsList[1]);
-  const comPort = new SerialPort(portsList[1].comName, { baudRate: 115200 });
+  const comName = (portsList[1] || portsList[0]).comName;
+  console.log('Using telemetry provider on COM port', comName);
+  const comPort = new SerialPort(comName, { baudRate: 115200 });
   const comParser = new Readline();
   comPort.pipe(comParser);
 
@@ -66,8 +67,9 @@ connectToBoard().then(conn => {
 
     console.log(`> ${line}`);
 
-    if(line[0]!= 'H') return;
-    handleTelemetry(line);
+    if(line[0] == 'H') {
+      handleTelemetry(line);
+    }
   });
 
   boardConnection = conn;
@@ -75,13 +77,15 @@ connectToBoard().then(conn => {
 
 const PROXIMITY_SENSOR_I2C_ADDR = 0x40;
 const PROXIMITY_SENSOR_I2C_DATA_REG = 0x5e;
-const i2c1 = i2c.openSync(1);
+const i2c1 = i2c && i2c.openSync(1);
 
 function sendProximityData() {
   const proximity = i2c1.readByteSync(PROXIMITY_SENSOR_I2C_ADDR, PROXIMITY_SENSOR_I2C_DATA_REG);
   telemetryEvents.send({ proximity });
 }
-setInterval(sendProximityData, 500);
+if (i2c1) {
+  setInterval(sendProximityData, 500);
+}
 
 const webApp = express()
 const webPort = 3000
@@ -89,13 +93,39 @@ const webPort = 3000
 webApp.use(express.static(path.join(__dirname, '../bot-control/build')));
 webApp.get('/telemetry', telemetryEvents.init);
 
+const ACCELERATION_TIME = 1000; //ms
+const doMove = ({ xr, xrpm, yr, yrpm, shouldAddMore }) => {
+  let addition = '';
+  if (shouldAddMore) {
+    addition += doMove({
+      xr: '' + 0.02,
+      xrpm: '' + (Number(xrpm) / 4),
+      yr: '' + 0.02,
+      yrpm: '' + (Number(yrpm) / 4),
+      shouldAddMore: false
+    }) + ':' + doMove({
+      xr: '' + 0.02,
+      xrpm: '' + (Number(xrpm) / 3),
+      yr: '' + 0.02,
+      yrpm: '' + (Number(yrpm) / 3),
+      shouldAddMore: false
+    }) + ':' + doMove({
+      xr: '' + 0.02,
+      xrpm: '' + (Number(xrpm) / 2),
+      yr: '' + 0.02,
+      yrpm: '' + (Number(yrpm) / 2),
+      shouldAddMore: false
+    }) + ':';
+  }
+
+  const msg = `M ${xr} ${xrpm} ${yr} ${yrpm}`;
+  return addition + msg;
+};
 webApp.get('/move/:xr/:xrpm/:yr/:yrpm', (req, res) => {
-  const { xr, xrpm, yr, yrpm } = req.params;
-  const msg = `M ${xr.padStart(5, ' ')} ${xrpm.padStart(2, ' ')} ${yr.padStart(5, ' ')} ${yrpm.padStart(2, ' ')}`;
-  console.log('SENDING MOVE ' + msg);
+const move = doMove({ ...req.params, shouldAddMore: true });
 
-  boardConnection.send(msg);
-
+  console.log('SENDING MOVE ' + move);
+  boardConnection.send(move + ' ;');
   res.send(req.params)
 });
 
