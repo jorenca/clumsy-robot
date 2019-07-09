@@ -4,6 +4,8 @@ const SerialPort = require('serialport')
 const Readline = require('@serialport/parser-readline')
 const SSE = require('express-sse');
 const i2c = require('i2c-bus');
+const gpio = require('rpi-gpio')
+const gpiop = gpio.promise;
 var telemetryEvents = new SSE();
 
 const superMarioThemeSong = require('./super-mario-theme.json');
@@ -66,6 +68,10 @@ function handleTelemetry(line) {
 let boardConnection;
 connectToBoard().then(conn => {
   conn.addListener(line => {
+
+  //return;
+   // if (line[0] === 'D') return; // movement debugging aid
+
     console.log(`> ${line}`);
 
     if (line[0] == 'H') {
@@ -82,6 +88,7 @@ const i2c1 = i2c && i2c.openSync(1);
 
 function sendProximityData() {
   const proximity = i2c1.readByteSync(PROXIMITY_SENSOR_I2C_ADDR, PROXIMITY_SENSOR_I2C_DATA_REG);
+  console.log('>>' + proximity);
   telemetryEvents.send({ proximity });
 }
 if (i2c1) {
@@ -137,5 +144,17 @@ webApp.get('/sing', (req, res) => {
 
   res.send(req.params)
 });
+
+
+const RGB_LED_PINS = [22, 17, 27];
+gpio.setMode(gpio.MODE_BCM);
+const led = (async () => {
+  for(let i = 0; i <  RGB_LED_PINS.length; i++) {
+    const pin = RGB_LED_PINS[i];
+    await gpiop.setup(pin, gpio.DIR_OUT);
+    await gpiop.write(pin, 1);
+  }
+  await gpiop.write(RGB_LED_PINS[1], 0);
+})();
 
 webApp.listen(webPort, () => console.log(`Web app listening on port ${webPort}.`))
