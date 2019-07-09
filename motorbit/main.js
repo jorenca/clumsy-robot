@@ -12,7 +12,7 @@ const MOTOR_STEP_PIN_A = [AnalogPin.P0, AnalogPin.P2];
 const MOTOR_DIR_PINS = [DigitalPin.P1, DigitalPin.P16];
 const STEPS_PER_REV = 800;
 function MotorCtrl(motor: number) {
-    const workQueue: Array<Array<number>> = [];
+    let workQueue: Array<Array<number>> = [];
 
     return {
         worker: () => {
@@ -36,6 +36,10 @@ function MotorCtrl(motor: number) {
             if (workQueue.length === 0) {
                 pins.analogWritePin(MOTOR_STEP_PIN_A[motor], 0);
             }
+        },
+        cstop: () => {
+            workQueue = [];
+            pins.analogWritePin(MOTOR_STEP_PIN_A[motor], 0);
         },
         addMove: (revs: number, rpm: number) => {
             let dir: number;
@@ -124,9 +128,9 @@ function handleDirectMoveRequest(req: string) {
     const freq = parseInt(params[2]);
     const dir = parseInt(params[3]);
 
-    // fixme left right
     motorCtrl.enable();
-    motorCtrl.left.addDirectMove(timeMs, freq, dir);
+    motorCtrl[motor == 'L' ? 'left' : 'right']
+        .addDirectMove(timeMs, freq, dir);
 }
 
 serial.setRxBufferSize(128);
@@ -140,13 +144,19 @@ serial.onDataReceived(";", function () {
         omgSplit(line, ":").forEach(handleDirectMoveRequest);
     }
 
+    if (line === 'CSTOP;') {
+        motorCtrl.enable();
+        motorCtrl.left.cstop();
+        motorCtrl.right.cstop();
+    }
+
     led.toggle(1, 0);
 });
 
 serial.writeString('GO!\n');
 basic.forever(function () { // telemetry
-    //const reportStr = report();
-    //serial.writeString(reportStr + '\n');
+    const reportStr = report();
+    serial.writeString(reportStr + '\n');
 
     led.toggle(0, 0);
     basic.pause(100);

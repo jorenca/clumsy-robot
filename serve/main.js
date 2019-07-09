@@ -128,8 +128,8 @@ webApp.get('/move/:xr/:xrpm/:yr/:yrpm', (req, res) => {
   res.send(req.params)
 });
 
-webApp.get('/stop', (req, res) => {
-  boardConnection.send('CSTOP');
+webApp.get('/cstop', (req, res) => {
+  boardConnection.send('CSTOP;');
   res.send(req.params)
 });
 
