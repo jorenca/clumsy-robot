@@ -124,7 +124,6 @@ function handleDirectMoveRequest(req: string) {
     const freq = parseInt(params[2]);
     const dir = parseInt(params[3]);
 
-    serial.writeString('DIRECT - ' + timeMs + ' - ' + freq + '\n');
     // fixme left right
     motorCtrl.enable();
     motorCtrl.left.addDirectMove(timeMs, freq, dir);

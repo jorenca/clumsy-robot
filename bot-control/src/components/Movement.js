@@ -13,15 +13,17 @@ export default class Telemetry extends React.Component {
 
   setSpeed = e => this.setState({ speed: e.target.value });
 
+  cstop = () => fetch('/cstop');
+
   render() {
     const { speed } = this.state;
-    const { move, setSpeed } = this;
+    const { move, setSpeed, cstop } = this;
     return (
       <div className="movement-container">
         Movement
 
         <SpeedSlider speed={speed} setSpeed={setSpeed} />
-        <Keypad move={move} />
+        <Keypad move={move} cstop={cstop} />
       </div>
     );
   }
@@ -32,7 +34,7 @@ const SpeedSlider = ({ speed, setSpeed }) =>
   <input type="range" min="10" max="99" value={speed} onChange={setSpeed} />
 </div>;
 
-const Keypad = ({ move }) =>
+const Keypad = ({ move, cstop }) =>
 <div className="keypad">
   <table>
     <tbody>
@@ -69,13 +71,17 @@ const Keypad = ({ move }) =>
         <td />
         <td><Control onClick={() => move(-1, -1)}/></td>
         <td />
-        <td />
+        <td>
+          <Control onClick={() => cstop()} style={{ backgroundColor: 'red' }}>
+            STOP
+          </Control>
+        </td>
       </tr>
     </tbody>
   </table>
 </div>;
 
-const Control = ({ onClick }) =>
-<button onClick={onClick} style={{ width: '50px', height: '50px' }}>
-  X
+const Control = ({ onClick, children, style }) =>
+<button onClick={onClick} style={{ width: '50px', height: '50px', ...style }}>
+  {children || 'X'}
 </button>

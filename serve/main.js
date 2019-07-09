@@ -68,10 +68,6 @@ function handleTelemetry(line) {
 let boardConnection;
 connectToBoard().then(conn => {
   conn.addListener(line => {
-
-  //return;
-   // if (line[0] === 'D') return; // movement debugging aid
-
     console.log(`> ${line}`);
 
     if (line[0] == 'H') {
@@ -132,6 +128,11 @@ webApp.get('/move/:xr/:xrpm/:yr/:yrpm', (req, res) => {
   res.send(req.params)
 });
 
+webApp.get('/stop', (req, res) => {
+  boardConnection.send('CSTOP');
+  res.send(req.params)
+});
+
 const doDirectMove = ({ timeMs, frequency, dir }) => `DR ${timeMs} ${frequency} ${dir}`;
 webApp.get('/sing', (req, res) => {
   let time = 0;
@@ -147,13 +148,16 @@ webApp.get('/sing', (req, res) => {
 
 
 const RGB_LED_PINS = [22, 17, 27];
-gpio.setMode(gpio.MODE_BCM);
 const led = (async () => {
-  for(let i = 0; i <  RGB_LED_PINS.length; i++) {
+  if (!gpio) return;
+  gpio.setMode(gpio.MODE_BCM);
+
+  for (let i = 0; i < RGB_LED_PINS.length; i++) {
     const pin = RGB_LED_PINS[i];
     await gpiop.setup(pin, gpio.DIR_OUT);
     await gpiop.write(pin, 1);
   }
+
   await gpiop.write(RGB_LED_PINS[1], 0);
 })();
 
