@@ -133,6 +133,11 @@ webApp.get('/cstop', (req, res) => {
   res.send(req.params)
 });
 
+webApp.get('/motor_cmd/:cmd', (req, res) => {
+  boardConnection.send(`${req.params.cmd}`);
+  res.send(req.params)
+});
+
 const doDirectMove = ({ timeMs, frequency, dir }) => `DR ${timeMs} ${frequency} ${dir}`;
 webApp.get('/sing', (req, res) => {
   let time = 0;

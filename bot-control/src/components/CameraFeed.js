@@ -1,7 +1,7 @@
 import React from 'react';
 import './CameraFeed.scss';
 
-const CAMERA_FEED_ADDR = 'http://192.168.100.195:8080/stream/video.mjpeg'; // FIXME GEORGI HARDCODED URL
+const CAMERA_FEED_ADDR = window.location.origin.replace(':3000', ':8080') + '/stream/video.mjpeg';
 const CameraFeed = ({ proximity }) =>
 <div className="feed-container">
   <img alt="feed" src={CAMERA_FEED_ADDR} />

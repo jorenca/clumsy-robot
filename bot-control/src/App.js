@@ -3,6 +3,7 @@ import './App.css';
 import Telemetry from './components/Telemetry';
 import Movement from './components/Movement';
 import CameraFeed from './components/CameraFeed';
+import DirectCommand from './components/DirectCommand';
 
 class App extends React.Component {
   state = {
@@ -22,6 +23,7 @@ class App extends React.Component {
         <div className="side-panel">
           <Movement />
           <Telemetry shareData={this.shareTelemetry} />
+          <DirectCommand />
         </div>
       </div>
     );
