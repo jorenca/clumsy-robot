@@ -133,6 +133,27 @@ function handleDirectMoveRequest(req: string) {
         .addDirectMove(timeMs, freq, dir);
 }
 
+function handleCoordinatedTurn(req: string) {
+    const params = omgSplit(req, " ");
+    const targetHeading = parseInt(params[1]);
+
+    motorCtrl.enable();
+    motorCtrl.left.addDirectMove(1000 * 10, 1000, 0);
+    motorCtrl.right.addDirectMove(1000 * 10, 1000, 0);
+
+    while (motorCtrl.left.state()) {
+        const hdg = input.compassHeading();
+
+        const deltaHdg = Math.abs(hdg - targetHeading);
+        if (deltaHdg < 5) {
+            motorCtrl.left.cstop();
+            motorCtrl.right.cstop();
+        }
+
+        basic.pause(10);
+    }
+}
+
 serial.setRxBufferSize(128);
 serial.onDataReceived(";", function () {
     const line = serial.readString();
@@ -142,6 +163,10 @@ serial.onDataReceived(";", function () {
 
     if (line.charAt(0) == 'D') {
         omgSplit(line, ":").forEach(handleDirectMoveRequest);
+    }
+
+    if (line.charAt(0) == 'C') {
+        handleCoordinatedTurn(line);
     }
 
     if (line === 'CSTOP;') {
