@@ -44,68 +44,33 @@ void applyJerk(int motor) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int elapsedCycles[2] = {0, 0};
-boolean toggleStepIfTimeHasCome(int motor) {
-  int& elapsed = elapsedCycles[motor];
-  elapsed++;
-
-  int& toggleOnCycle = actualToggleOnIthCycle[motor];
-  if (toggleOnCycle == 0) { // turned off, 0 speed
-    return false;
-  }
-
-  if (elapsed >= toggleOnCycle) {
-    toggleStep(motor);
-    elapsed = 0;
-
-    return true;
-  }
-
-  return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-void stepTickHappens(int motor, boolean freeMode) {
-  if (!freeMode) {
-    int& stepsToDo = (workQueue[motor][workQueueIndex[motor]]);
-    if (stepsToDo == 0) {
-      return;
-    }
-
-    boolean stepHappened = toggleStepIfTimeHasCome(motor);
-    if (!stepHappened) {
-      return;
-    }
-
-    stepsToDo--;
-
-    if (stepsToDo == 0) {
-      int& nextStepsToDo = (workQueue[motor][workQueueIndex[motor] + 1]);
-      if (nextStepsToDo > 0) {
-        workQueueIndex[motor]++;
-        // FIXME USE WORK QUEUE SPEEDS
-        //requestSpeed(motor, );
-      }
-    }
-  } else { // FREE MODE
-     toggleStepIfTimeHasCome(motor);
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
 int jerkApplyCounter = 0;
 const int JERK_APPLY_ON_COUNTER_VALUE = 200; // 4kHz / 200 = 20Hz
 
+volatile int cyclesPerHalfStep[] = {20, 0};
+volatile int cyclesLeftUntilToggle[] = {0, 0};
 void timerSnapCallback() { // 8Mhz / 2000 counter = 4kHz
-  if (jerkApplyCounter++ >= JERK_APPLY_ON_COUNTER_VALUE) {
-    applyJerk(0);
-    applyJerk(1);
-    jerkApplyCounter = 0;
-  }
+  // if (jerkApplyCounter++ >= JERK_APPLY_ON_COUNTER_VALUE) {
+  //   applyJerk(0);
+  //   applyJerk(1);
+  //   jerkApplyCounter = 0;
+  // }
 
   for(int motor = 0; motor <= 1; motor++) {
-      stepTickHappens(motor, true);
+    //stepTickHappens(motor, true);
+    if (cyclesPerHalfStep[motor] > 0) {
+      if (cyclesLeftUntilToggle[motor] == 0) {
+        toggleStep(motor);
+        cyclesLeftUntilToggle[motor] = cyclesPerHalfStep[motor];
+      }
+      cyclesLeftUntilToggle[motor]--;
+    }
   }
+}
+
+const int INTERRUPT_FREQ = F_CPU / 1000; // 8k
+void setFreq(int motor, int hz) {
+  cyclesPerHalfStep[motor] = (INTERRUPT_FREQ / hz) / 2;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -120,7 +85,8 @@ void setup() {
   pinMode(6, OUTPUT);
   pinMode(8, OUTPUT);
 
-  timer1(TIMER1_PRESCALER_1, 2000U, timerSnapCallback); // execute every 2000th clock
+  timer1(TIMER1_PRESCALER_1, 999U, timerSnapCallback); // execute 10khz
+  //timer2(TIMER2_PRESCALER_1, 255, cb2); // execute every 2000th clock
   sei();
 }
 
@@ -139,9 +105,10 @@ void serialEvent() {
       cli();
       int steps = (int) inputString[0];
       int cycles = inputString.toInt();
-      workQueue[0][workQueueIndex[0]] = steps;
-      workQueueSpeed[0][workQueueIndex[0]] = cycles;
-      requestSpeed(0, cycles);
+      // workQueue[0][workQueueIndex[0]] = steps;
+      // workQueueSpeed[0][workQueueIndex[0]] = cycles;
+      // requestSpeed(0, cycles);
+      setFreq(0, cycles);
       Serial.printf("> %d %d\r\n", steps, cycles);
       inputString = "";
       sei();

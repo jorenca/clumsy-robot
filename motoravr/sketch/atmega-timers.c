@@ -21,19 +21,17 @@
 
 #include "atmega-timers.h"
 
-// patch
-#define TIMSK1 TIMSK
-
 void (*_t1_func)();
+void (*_t2_func)();
 
 void timer1(uint8_t prescaler, uint16_t ticks, void (*f)()) {
-	TIMSK1 &= ~(_BV(OCIE1A));
+	TIMSK &= ~(_BV(OCIE1A));
 	_t1_func = f;
 	OCR1A = ticks;
 	TCCR1A = 0;
 	TCCR1B = prescaler | _BV(WGM12);
 	TCNT1 = 0;
-	TIMSK1 |= _BV(OCIE1A);
+	TIMSK |= _BV(OCIE1A);
 }
 
 void timer1_stop() {
@@ -43,5 +41,25 @@ void timer1_stop() {
 #ifdef ENABLE_TIMER1
 ISR(TIMER1_COMPA_vect) {
 	_t1_func();
+}
+#endif
+
+void timer2(uint8_t prescaler, uint8_t ticks, void (*f)()) {
+	TIMSK &= ~(_BV(OCIE2));
+	_t2_func = f;
+	OCR2 = ticks;
+	//ASSR = 0;
+	TCCR2 = _BV(WGM21) | prescaler;
+	TCNT2 = 0;
+	TIMSK |= _BV(OCIE2);
+}
+
+void timer2_stop() {
+	TCCR2 = 0;
+}
+
+#ifdef ENABLE_TIMER2
+ISR(TIMER2_COMPA_vect) {
+	_t2_func();
 }
 #endif
