@@ -13,18 +13,51 @@ const MOTOR_DIR_PINS = [DigitalPin.P1, DigitalPin.P16];
 const STEPS_PER_REV = 800;
 function MotorCtrl(motor: number) {
     let workQueue: Array<Array<number>> = [];
-    let currentPulseDuration: number = 0;
+    const hasWork = (): boolean => workQueue.length > 0;
+    let doingSpeedChange: boolean = false;
+    let currentSpeed: number = 0;
 
-    const doMove = (timeMs: number, speed: number, dir: number) => {
+    const doMove = (timeMs: number, speed: number, dir: number) => {  // speed is measured in steps per second
         const pulseDuration = 1000000 / speed;
-        pins.digitalWritePin(MOTOR_DIR_PINS[motor], dir);
 
+        pins.digitalWritePin(MOTOR_DIR_PINS[motor], dir);
         pins.analogWritePin(MOTOR_STEP_PIN_A[motor], 512);
         pins.analogSetPeriod(MOTOR_STEP_PIN_A[motor], pulseDuration);
+
+        currentSpeed = speed;
         basic.pause(timeMs); // wait to complete
     };
 
-    const stopMotor = () => pins.analogWritePin(MOTOR_STEP_PIN_A[motor], 0);
+    const stopMotor = () => {
+      pins.analogWritePin(MOTOR_STEP_PIN_A[motor], 0);
+      currentSpeed = 0;
+    }
+
+    const SPEED_JERK_STEPS = 100;
+    const JERK_STEP_LENGTH_MS = 20;
+    const MIN_SPEED = 300;
+    const accelerateTo = (desiredSpeed: number, dir: number) => { // speed is measured in steps per second
+      doingSpeedChange = true;
+      const initialStep = Math.max(currentSpeed + SPEED_JERK_STEPS, MIN_SPEED);
+      for (let step = initialStep; step < desiredSpeed; step += SPEED_JERK_STEPS) {
+        doMove(JERK_STEP_LENGTH_MS, step, dir);
+      }
+      doingSpeedChange = false;
+    };
+
+    const deccelerateTo = (desiredSpeed: number, dir: number) => { // speed is measured in steps per second
+      doingSpeedChange = true;
+      for (
+        let step = currentSpeed - SPEED_JERK_STEPS;
+        step > desiredSpeed && step >= MIN_SPEED;
+        step -= SPEED_JERK_STEPS) {
+        doMove(JERK_STEP_LENGTH_MS, step, dir);
+      }
+      if (desiredSpeed === 0) {
+        stopMotor();
+      }
+      doingSpeedChange = false;
+    };
 
     const runNextTask = () => {
       const work = workQueue.get(0);
@@ -32,17 +65,21 @@ function MotorCtrl(motor: number) {
       const speed = work[1]; // speed is measured in steps per second
       const dir = work[2];
 
+      if (currentSpeed < speed) {
+        accelerateTo(speed, dir);
+      } else {
+        deccelerateTo(speed, dir);
+      }
       doMove(timeMs, speed, dir);
       workQueue.shift();
-    };
 
-    const hasWork = (): boolean => workQueue.length > 0;
+      if (!hasWork()) { deccelerateTo(0, dir); }
+    };
 
     return {
         worker: () => {
             if (!hasWork()) { return; }
             runNextTask();
-            if (!hasWork()) { stopMotor(); }
         },
         cstop: () => {
             workQueue = [];
@@ -61,9 +98,9 @@ function MotorCtrl(motor: number) {
 
             workQueue.push([timeMs, speed, dir]);
         },
-        addDirectMove: (timeMs: number, speed: number, dir: number) =>
+        addDirectMove: (timeMs: number, speed: number, dir: number) =>  // speed is measured in steps per second
             workQueue.push([timeMs, speed, dir]),
-        state: hasWork
+        state: (): boolean => hasWork() || doingSpeedChange
     }
 }
 const motorCtrl = {
