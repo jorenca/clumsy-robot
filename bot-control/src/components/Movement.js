@@ -1,7 +1,8 @@
 import React from 'react';
+import GamepadControl from './GamepadControl.js';
 import './Movement.scss';
 
-export default class Telemetry extends React.Component {
+export default class Movement extends React.Component {
   state = {
     speed: '60'
   };
@@ -22,6 +23,7 @@ export default class Telemetry extends React.Component {
       <div className="movement-container">
         Movement
 
+        <GamepadControl />
         <SpeedSlider speed={speed} setSpeed={setSpeed} />
         <Keypad move={move} cstop={cstop} />
       </div>
