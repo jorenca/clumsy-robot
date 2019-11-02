@@ -36,27 +36,33 @@ function MotorCtrl(motor: number) {
     const SPEED_JERK_STEPS = 100;
     const JERK_STEP_LENGTH_MS = 20;
     const MIN_SPEED = 300;
-    const accelerateTo = (desiredSpeed: number, dir: number) => { // speed is measured in steps per second
+    const accelerateTo = (desiredSpeed: number, dir: number): number => { // speed is measured in steps per second
       doingSpeedChange = true;
+      let msPassed = 0;
       const initialStep = Math.max(currentSpeed + SPEED_JERK_STEPS, MIN_SPEED);
       for (let step = initialStep; step < desiredSpeed; step += SPEED_JERK_STEPS) {
         doMove(JERK_STEP_LENGTH_MS, step, dir);
+        msPassed += JERK_STEP_LENGTH_MS;
       }
       doingSpeedChange = false;
+      return msPassed;
     };
 
-    const deccelerateTo = (desiredSpeed: number, dir: number) => { // speed is measured in steps per second
+    const deccelerateTo = (desiredSpeed: number, dir: number): number => { // speed is measured in steps per second
       doingSpeedChange = true;
+      let msPassed = 0;
       for (
         let step = currentSpeed - SPEED_JERK_STEPS;
         step > desiredSpeed && step >= MIN_SPEED;
         step -= SPEED_JERK_STEPS) {
         doMove(JERK_STEP_LENGTH_MS, step, dir);
+        msPassed += JERK_STEP_LENGTH_MS;
       }
       if (desiredSpeed === 0) {
         stopMotor();
       }
       doingSpeedChange = false;
+      return msPassed;
     };
 
     const runNextTask = () => {
@@ -65,12 +71,9 @@ function MotorCtrl(motor: number) {
       const speed = work[1]; // speed is measured in steps per second
       const dir = work[2];
 
-      if (currentSpeed < speed) {
-        accelerateTo(speed, dir);
-      } else {
-        deccelerateTo(speed, dir);
-      }
-      doMove(timeMs, speed, dir);
+      const msChangingSpeed =  currentSpeed < speed ? accelerateTo(speed, dir) : deccelerateTo(speed, dir);
+
+      doMove(Math.max(timeMs - msChangingSpeed, 0), speed, dir);
       workQueue.shift();
 
       if (!hasWork()) { deccelerateTo(0, dir); }
