@@ -165,7 +165,7 @@ serial.onDataReceived(";", function () {
         omgSplit(line, ":").forEach(handleDirectMoveRequest);
     }
 
-    if (line.charAt(0) == 'C') {
+    if (line.charAt(0) == 'C' && line.charAt(1) == ' ') { // C 180
         handleCoordinatedTurn(line);
     }
 

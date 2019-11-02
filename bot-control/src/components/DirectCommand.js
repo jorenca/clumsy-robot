@@ -41,14 +41,15 @@ class CommandInputModal extends React.Component {
           onChange={e => this.setState({ cmd: e.target.value })}
         />
         <button onClick={() => onSend(cmd)}>Send</button>
-        
+
         <pre>
           M leftRotations leftRPM rightRotations rightRPM<br />
           D[L|R] timeMs stepFrequency direction<br/>
+          C angle
           CSTOP<br />
           <br />
           <br />
-          CMD1;<br />
+          CMD1 ;<br />
           M_CMD1:M_CMD2:M_CMD3:...;
         </pre>
 
