@@ -53,6 +53,7 @@ const Keypad = ({ move, cstop }) => {
         moveLeft={moveLeft}
         moveRight={moveRight}
         setHasGamepad={setHasGamepad}
+        stop={cstop}
         />
 
       <table>

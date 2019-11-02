@@ -2,7 +2,8 @@ import React, { useRef, useEffect, useState } from 'react';
 import _ from 'lodash';
 import Gamepad from 'react-gamepad';
 
-const revsInHalfSec = (speed) => speed /* rpm */ / (60 * 2);
+const CALLS_PER_SEC = 3;
+const revsInPartSec = (speed) => speed /* rpm */ / (60 * CALLS_PER_SEC);
 
 function useInterval(callback, delay) {
   const savedCallback = useRef();
@@ -26,9 +27,10 @@ function useInterval(callback, delay) {
 
 const MIN_SPEED = 20;
 const MAX_SPEED = 99;
-export default ({ moveUp, moveDown, moveLeft, moveRight, setHasGamepad }) => {
+export default ({ moveUp, moveDown, moveLeft, moveRight, setHasGamepad, stop }) => {
   const [xAxisValue, setXAxis] = useState(0);
   const [yAxisValue, setYAxis] = useState(0);
+  const [turboCoeff, setTurboCoeff] = useState(1);
 
   const onAxisChange = (axis, value) => {
     let requestedSpeed = value * MAX_SPEED;
@@ -45,31 +47,51 @@ export default ({ moveUp, moveDown, moveLeft, moveRight, setHasGamepad }) => {
     applyAxisUpdate(requestedSpeed);
   };
 
+  const onButtonPressed = (button) => {
+    if (button === 'Y') {
+      moveLeft(0.1, 40);
+    } else if (button === 'B') {
+      moveRight(0.1, 40);
+    } else if (button === 'RT') {
+      setTurboCoeff(2.5);
+    } else if (button === 'LT') {
+      stop();
+    }
+  };
+
+  const onButtonUp = (button) => {
+    if (button === 'RT') {
+      setTurboCoeff(1);
+    }
+  };
+
   useInterval(() => {
     if (xAxisValue === 0 && yAxisValue === 0) {
       return;
     }
 
     if (Math.abs(yAxisValue) > Math.abs(xAxisValue)) { // move ahead / back
-      const speed = yAxisValue;
+      const speed = yAxisValue * turboCoeff;
       if (speed > 0) {
-        moveUp(revsInHalfSec(speed), speed);
+        moveUp(revsInPartSec(speed), speed);
       } else {
-        moveDown(revsInHalfSec(Math.abs(speed)), Math.abs(speed));
+        moveDown(revsInPartSec(Math.abs(speed)), Math.abs(speed));
       }
     } else { // turn left or right
       const speed = xAxisValue / 2;
       if (speed < 0) {
-        moveLeft(revsInHalfSec(Math.abs(speed)), Math.abs(speed));
+        moveLeft(revsInPartSec(Math.abs(speed)), Math.abs(speed));
       } else {
-        moveRight(revsInHalfSec(speed), speed);
+        moveRight(revsInPartSec(speed), speed);
       }
     }
-  }, 450);
+  }, (1000 / CALLS_PER_SEC) - 20 /* some toleranse */);
 
   return (
     <Gamepad
       onAxisChange={onAxisChange}
+      onButtonDown={onButtonPressed}
+      onButtonUp={onButtonUp}
       onConnect={() => setHasGamepad(true)}
       onDisconnect={() => setHasGamepad(false)}>
       <p />
