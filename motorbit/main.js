@@ -13,33 +13,40 @@ const MOTOR_DIR_PINS = [DigitalPin.P1, DigitalPin.P16];
 const STEPS_PER_REV = 800;
 function MotorCtrl(motor: number) {
     let workQueue: Array<Array<number>> = [];
+    let currentPulseDuration: number = 0;
+
+    const doMove = (timeMs: number, speed: number, dir: number) => {
+        const pulseDuration = 1000000 / speed;
+        pins.digitalWritePin(MOTOR_DIR_PINS[motor], dir);
+
+        pins.analogWritePin(MOTOR_STEP_PIN_A[motor], 512);
+        pins.analogSetPeriod(MOTOR_STEP_PIN_A[motor], pulseDuration);
+        basic.pause(timeMs); // wait to complete
+    };
+
+    const stopMotor = () => pins.analogWritePin(MOTOR_STEP_PIN_A[motor], 0);
+
+    const runNextTask = () => {
+      const work = workQueue.get(0);
+      const timeMs = work[0];
+      const speed = work[1]; // speed is measured in steps per second
+      const dir = work[2];
+
+      doMove(timeMs, speed, dir);
+      workQueue.shift();
+    };
+
+    const hasWork = (): boolean => workQueue.length > 0;
 
     return {
         worker: () => {
-            if (workQueue.length === 0) {
-                return;
-            }
-
-            const work = workQueue.get(0);
-            const timeMs = work[0];
-            const speed = work[1]; // speed is measured in steps per second
-            const dir = work[2];
-
-            const pulseDuration = 1000000 / speed;
-            pins.digitalWritePin(MOTOR_DIR_PINS[motor], dir);
-
-            pins.analogWritePin(MOTOR_STEP_PIN_A[motor], 512);
-            pins.analogSetPeriod(MOTOR_STEP_PIN_A[motor], pulseDuration);
-            basic.pause(timeMs); // wait to complete
-
-            workQueue.shift();
-            if (workQueue.length === 0) {
-                pins.analogWritePin(MOTOR_STEP_PIN_A[motor], 0);
-            }
+            if (!hasWork()) { return; }
+            runNextTask();
+            if (!hasWork()) { stopMotor(); }
         },
         cstop: () => {
             workQueue = [];
-            pins.analogWritePin(MOTOR_STEP_PIN_A[motor], 0);
+            stopMotor();
         },
         addMove: (revs: number, rpm: number) => {
             let dir: number;
@@ -56,7 +63,7 @@ function MotorCtrl(motor: number) {
         },
         addDirectMove: (timeMs: number, speed: number, dir: number) =>
             workQueue.push([timeMs, speed, dir]),
-        state: (): boolean => workQueue.length > 0
+        state: hasWork
     }
 }
 const motorCtrl = {
