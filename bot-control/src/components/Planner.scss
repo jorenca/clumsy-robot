@@ -28,12 +28,12 @@
 
   .plan-step-container {
     .plan-step {
+      &.active {
+        background-color: green;
+      }
+      
       border: 1px solid gray;
       margin: 3px;
-    }
-
-    &.active {
-      background-color: green;
     }
   }
 }
