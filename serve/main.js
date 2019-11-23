@@ -104,27 +104,9 @@ const accelerationLerp = (targetRpm, div, totalDivs) => {
   const revs = rpm * (ACCELERATION_TIME / totalDivs) / 60000;
   return { rpm: rpm.toPrecision(3), revs: revs.toPrecision(2) };
 };
-const doMove = ({ xr, xrpm, yr, yrpm, shouldAddMore }) => {
-  let addition = '';
-  if (shouldAddMore) {
-    for (let i = 1; i < ACCELERATION_DIVS; i++) {
-      const lerp = accelerationLerp(xrpm, i, ACCELERATION_DIVS);
-      addition += doMove({
-        xr: '' + lerp.revs,
-        xrpm: '' + lerp.rpm,
-        yr: '' + lerp.revs,
-        yrpm: '' + lerp.rpm,
-        shouldAddMore: false
-      }) + ':';
-    }
-  }
-
-  const msg = `M ${xr} ${xrpm} ${yr} ${yrpm}`;
-  return addition + msg;
-};
+const doMove = ({ xr, xrpm, yr, yrpm }) => `M ${xr} ${xrpm} ${yr} ${yrpm} ;`;
 webApp.get('/move/:xr/:xrpm/:yr/:yrpm', (req, res) => {
-  const move = doMove({ ...req.params, shouldAddMore: false }) + ' ;';
-  boardConnection.send(move);
+  boardConnection.send(doMove(req.params));
   res.send(req.params)
 });
 
