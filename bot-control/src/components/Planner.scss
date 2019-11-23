@@ -1,0 +1,39 @@
+.planning-container {
+  border: 1px solid gray;
+  margin-top: 50px;
+
+  button.planning-toggle {
+    height: 50px;
+    width: 250px;
+  }
+}
+
+.planning-modal {
+  background: rgba(200, 200, 200, 0.3);
+  border: 1px solid gray;
+
+  position: absolute;
+
+  width: 500px;
+  height: 400px;
+  position: fixed;
+  top: calc(50% - 200px); // half of width
+  left: calc(50% - 250px); // half of height
+
+  button {
+    width: 100px;
+    height: 100px;
+    vertical-align: top;
+  }
+
+  .plan-step-container {
+    .plan-step {
+      border: 1px solid gray;
+      margin: 3px;
+    }
+
+    &.active {
+      background-color: green;
+    }
+  }
+}

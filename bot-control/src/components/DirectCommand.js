@@ -45,7 +45,7 @@ class CommandInputModal extends React.Component {
         <pre>
           M leftRotations leftRPM rightRotations rightRPM<br />
           D[L|R] timeMs stepFrequency direction<br/>
-          C angle
+          C angle<br />
           CSTOP<br />
           <br />
           <br />

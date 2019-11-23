@@ -21,7 +21,7 @@ class App extends React.Component {
       <div className="App">
         <CameraFeed proximity={sharedTelemetry.proximity} />
         <div className="side-panel">
-          <Movement />
+          <Movement sharedTelemetry={sharedTelemetry}/>
           <Telemetry shareData={this.shareTelemetry} />
           <DirectCommand />
         </div>

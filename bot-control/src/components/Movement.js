@@ -1,22 +1,26 @@
 import React, { useState } from 'react';
 import GamepadControl from './GamepadControl.js';
+import Planner from './Planner';
 import './Movement.scss';
 import gamepadIcon from './gamepad_icon.png';
 
-export default function Movement() {
-  const [speed, setSpeed] = useState('60');
+export default function Movement({ sharedTelemetry }) {
+  const [speed, setSpeed] = useState('90');
 
   const move = (left, right, overrideSpeed) => {
     const speedToUse = overrideSpeed || speed;
-    fetch(`/move/${left}/${speedToUse}/${right}/${speedToUse}`);
+    return fetch(`/move/${left}/${speedToUse}/${right}/${speedToUse}`);
   };
   const cstop = () => fetch('/cstop');
+  const cTurn = (angle) => fetch(`/motor_cmd/C ${angle} ;`);
 
   return (
     <div className="movement-container">
       Movement
       <SpeedSlider speed={speed} setSpeed={(e) => setSpeed(e.target.value)} />
       <Keypad move={move} cstop={cstop} />
+
+      <Planner move={move} cTurn={cTurn} sharedTelemetry={sharedTelemetry} />
     </div>
   );
 }
