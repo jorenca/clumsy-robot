@@ -9,6 +9,7 @@ const gpiop = gpio.promise;
 var telemetryEvents = new SSE();
 
 const superMarioThemeSong = require('./super-mario-theme.json');
+const ProximityInput = require('./proximityInput.js');
 
 async function connectToBoard() {
   const portsList = await SerialPort.list();
@@ -78,18 +79,10 @@ connectToBoard().then(conn => {
   boardConnection = conn;
 });
 
-const PROXIMITY_SENSOR_I2C_ADDR = 0x40;
-const PROXIMITY_SENSOR_I2C_DATA_REG = 0x5e;
-const i2c1 = i2c && i2c.openSync(1);
-
-function sendProximityData() {
-  const proximity = i2c1.readByteSync(PROXIMITY_SENSOR_I2C_ADDR, PROXIMITY_SENSOR_I2C_DATA_REG);
-  console.log('>>' + proximity);
-  telemetryEvents.send({ proximity });
-}
-if (i2c1) {
-  setInterval(sendProximityData, 500);
-}
+ProximityInput.create({
+  readInterval: 500,
+  callback: proximity => elemetryEvents.send({ proximity })
+});
 
 const webApp = express()
 const webPort = 3000
