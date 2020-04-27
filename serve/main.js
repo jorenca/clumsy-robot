@@ -99,11 +99,6 @@ webApp.get('/telemetry', telemetryEvents.init);
 
 const ACCELERATION_TIME = 500; //ms
 const ACCELERATION_DIVS = 5;
-const accelerationLerp = (targetRpm, div, totalDivs) => {
-  const rpm = targetRpm * (div / totalDivs);
-  const revs = rpm * (ACCELERATION_TIME / totalDivs) / 60000;
-  return { rpm: rpm.toPrecision(3), revs: revs.toPrecision(2) };
-};
 const doMove = ({ xr, xrpm, yr, yrpm }) => `M ${xr} ${xrpm} ${yr} ${yrpm} ;`;
 webApp.get('/move/:xr/:xrpm/:yr/:yrpm', (req, res) => {
   boardConnection.send(doMove(req.params));
