@@ -9,7 +9,7 @@ module.exports = {
 
     const comName = _(portsList)
       .filter({
-        vendorId: '0D28',
+        serialNumber: '9900000037944e45002c4011000000450000000097969901',
         productId: '0204'
       }).first().comName;
     console.log('[INFO] Motor board connected as', comName);

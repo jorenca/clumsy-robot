@@ -11,7 +11,11 @@ const Server = require('./server.js');
 var telemetryEvents = new SSE();
 
 let boardConnection;
-ComBoards.connectToMotorBoard().then(conn => {
+
+StatusLed.init()
+.then(StatusLed.goAmber)
+.then(ComBoards.connectToMotorBoard())
+.then(conn => {
   conn.addListener(_.throttle(line => console.log(`> ${line}`), 1000));
 
   conn.addListener(line => {
@@ -32,7 +36,5 @@ setTimeout(() => {
     telemetrySSE: telemetryEvents
   });
 
-  StatusLed.init()
-    .then(StatusLed.goGreen)
-    .then(Server.listen);
+    StatusLed.goGreen().then(Server.listen);
 }, 3000);
