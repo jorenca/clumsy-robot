@@ -24,10 +24,10 @@ module.exports = {
     await gpiop.write(RGB_LED_PINS[1], 0);
     await gpiop.write(RGB_LED_PINS[2], 1);
   },
-  goAmber: async () => {
+  goRed: async () => {
     if (!gpio) return;
     await gpiop.write(RGB_LED_PINS[0], 0);
-    await gpiop.write(RGB_LED_PINS[1], 0);
+    await gpiop.write(RGB_LED_PINS[1], 1);
     await gpiop.write(RGB_LED_PINS[2], 1);
   }
 };

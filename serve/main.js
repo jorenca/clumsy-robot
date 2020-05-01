@@ -16,7 +16,7 @@ ProximityInput.create({
 });
 
 StatusLed.init()
-.then(StatusLed.goAmber)
+.then(StatusLed.goRed)
 .then(ComBoards.connectToMotorBoard)
 .then(async conn => {
   conn.addListener(_.throttle(line => console.log(`> ${line}`), 1000));
