@@ -10,31 +10,27 @@ const Server = require('./server.js');
 
 var telemetryEvents = new SSE();
 
-let boardConnection;
+ProximityInput.create({
+  readInterval: 500,
+  callback: proximity => telemetryEvents.send({ proximity })
+});
 
 StatusLed.init()
 .then(StatusLed.goAmber)
-.then(ComBoards.connectToMotorBoard())
-.then(conn => {
+.then(ComBoards.connectToMotorBoard)
+.then(async conn => {
   conn.addListener(_.throttle(line => console.log(`> ${line}`), 1000));
 
   conn.addListener(line => {
     if (line[0] != 'H') return;
     telemetryEvents.send(TelemetryInput.recalcWithNewDataLine(line));
   });
-  boardConnection = conn;
-});
 
-ProximityInput.create({
-  readInterval: 500,
-  callback: proximity => telemetryEvents.send({ proximity })
-});
-
-setTimeout(() => {
   Server.init({
-    sendToMotorBoardFn: boardConnection.send,
+    sendToMotorBoardFn: conn.send,
     telemetrySSE: telemetryEvents
   });
 
-    StatusLed.goGreen().then(Server.listen);
-}, 3000);
+  await StatusLed.goGreen();
+  await Server.listen();
+});
