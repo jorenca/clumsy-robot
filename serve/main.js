@@ -8,29 +8,42 @@ const StatusLed = require('./statusLed.js');
 
 const Server = require('./server.js');
 
-var telemetryEvents = new SSE();
+const telemetrySSE = new SSE();
+
+let sendToMotorBoardFn = _.noop;
 
 ProximityInput.create({
   readInterval: 500,
-  callback: proximity => telemetryEvents.send({ proximity })
+  callback: proximity => telemetrySSE.send({ proximity })
 });
 
 StatusLed.init()
 .then(StatusLed.goRed)
 .then(ComBoards.connectToMotorBoard)
 .then(async conn => {
-  conn.addListener(_.throttle(line => console.log(`> ${line}`), 1000));
+  conn.addListener(_.throttle(line => console.log(`[MB]> ${line}`), 1000));
 
   conn.addListener(line => {
     if (line[0] != 'H') return;
-    telemetryEvents.send(TelemetryInput.recalcWithNewDataLine(line));
+    telemetrySSE.send(TelemetryInput.recalcWithNewDataLine(line));
   });
 
-  Server.init({
-    sendToMotorBoardFn: conn.send,
-    telemetrySSE: telemetryEvents
-  });
+  sendToMotorBoardFn = conn.send;
 
-  await StatusLed.goGreen();
+  if (!conn.error) await StatusLed.goGreen();
+})
+.then(ComBoards.connectToDetectorBoard)
+.then(conn => {
+    conn.addListener(_.throttle(line => console.log(`[IR]> ${line}`), 1000));
+
+    conn.addListener(line => {
+      const irData = JSON.parse(line);
+
+      console.log(`[IR]> ${JSON.stringify(irData, null, 2)}`);
+    });
+})
+.then(async () => {
+  Server.init({ sendToMotorBoardFn, telemetrySSE });
   await Server.listen();
-});
+})
+.catch(console.error);
