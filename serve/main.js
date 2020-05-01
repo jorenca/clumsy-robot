@@ -1,4 +1,5 @@
 const SSE = require('express-sse');
+const _ = require('lodash');
 
 const ProximityInput = require('./proximityInput.js');
 const TelemetryInput = require('./telemetryInput.js');
@@ -11,8 +12,9 @@ var telemetryEvents = new SSE();
 
 let boardConnection;
 ComBoards.connectToMotorBoard().then(conn => {
+  conn.addListener(_.throttle(line => console.log(`> ${line}`), 1000));
+
   conn.addListener(line => {
-    console.log(`> ${line}`);
     if (line[0] != 'H') return;
     telemetryEvents.send(TelemetryInput.recalcWithNewDataLine(line));
   });

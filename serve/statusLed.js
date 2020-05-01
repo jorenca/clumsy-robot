@@ -1,5 +1,5 @@
-const gpio = null; // require('rpi-gpio')
-const gpiop = null; // gpio.promise;
+const gpio = require('rpi-gpio');
+const gpiop = gpio.promise;
 
 const RGB_LED_PINS = [22, 17, 27];
 const led = (async () => {
