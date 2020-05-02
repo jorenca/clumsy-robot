@@ -10,6 +10,6 @@ module.exports.create = ({ readInterval, callback }) => {
       callback(proximity);
     };
     if (i2c1) {
-      setInterval(sendProximityData, 500);
+      setInterval(sendProximityData, readInterval);
     }
   };

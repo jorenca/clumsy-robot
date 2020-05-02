@@ -9,9 +9,9 @@ const webApp = express();
 module.exports = {
   init: ({ motorBoard, telemetrySSE, onConnect }) => {
     webApp.use(express.static(path.join(__dirname, '../bot-control/build')));
-    webApp.get('/telemetry', () => {
+    webApp.get('/telemetry', (...args) => {
       onConnect();
-      return telemetrySSE.init();
+      return telemetrySSE.init(...args);
     });
 
     webApp.get('/move/:xr/:xrpm/:yr/:yrpm', (req, res) => {

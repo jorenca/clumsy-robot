@@ -6,6 +6,7 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 let currentState = { r: 0, g: 0, b: 0 };
 const setColor = async (color) => {
+  if (!gpio) return;
   currentState = color;
   const {r, g, b} = color;
   await gpiop.write(RGB_LED_PINS[0], !r);
@@ -25,7 +26,6 @@ module.exports = {
     await setColor({ r: 0, g: 0, b: 0 });
   },
   singleFlash: async (r, g, b) => {
-    if (!gpio) return;
     const beforeFlashState = {...currentState};
     await setColor({ r, g, b });
     await sleep(100);
