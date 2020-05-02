@@ -22,7 +22,7 @@ module.exports = {
       const pin = RGB_LED_PINS[i];
       await gpiop.setup(pin, gpio.DIR_OUT);
     }
-    await setColor(0, 0, 0);
+    await setColor({ r: 0, g: 0, b: 0 });
   },
   singleFlash: async (r, g, b) => {
     if (!gpio) return;
@@ -31,12 +31,6 @@ module.exports = {
     await sleep(100);
     await setColor(beforeFlashState);
   },
-  goGreen: async () => {
-    if (!gpio) return;
-    await setColor(0, 1, 0);
-  },
-  goRed: async () => {
-    if (!gpio) return;
-    await setColor(1, 0, 0);
-  }
+  goGreen: async () => await setColor({ r: 0, g: 1, b: 0 }),
+  goRed: async () => await setColor({ r: 1, g: 0, b: 0 }),
 };
