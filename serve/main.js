@@ -36,12 +36,20 @@ StatusLed.init()
 .then(conn => {
   if (!conn) return;
 
-  setInterval(() => {
+  const nextSchedule = () => {
     const move = conn.getMoveToTarget();
-    if (!move || move.direction === 'none') return;
-    console.log(move);
-    motorBoard.doBasicMove(move);
-  }, 1000);
+    if (!move || move.direction === 'none') {
+      setTimeout(nextSchedule, 1000);
+      return;
+    };
+
+    const rpm = 80;
+    const timeTakenMs = (move.revs / rpm) * 60000;
+    setTimeout(nextSchedule, timeTakenMs);
+    motorBoard.doBasicMove({ ...move, rpm });
+  };
+
+  nextSchedule();
 })
 .then(async () => {
   Server.init({ motorBoard, telemetrySSE });

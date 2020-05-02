@@ -25,13 +25,13 @@ const dataToMove = data => {
 
   if (front >= 29) return { direction: 'none' };
 
-  if (left > front) return { direction: 'left', amount: 0.3 };
-  if (backLeft > front) return { direction: 'left', amount: 2 };
+  if (left > front) return { direction: 'left', revs: 0.3 };
+  if (backLeft > front) return { direction: 'left', revs: 1.5 };
 
-  if (right > front) return { direction: 'right', amount: 0.3 };
-  if (backRight > front) return { direction: 'right', amount: 2 };
+  if (right > front) return { direction: 'right', revs: 0.3 };
+  if (backRight > front) return { direction: 'right', revs: 1.5 };
 
-  if (front > 5) return { direction: 'forward', amount: 1 };
+  if (front > 5) return { direction: 'forward', revs: 1.5 };
   return { direction: 'none' };
 };
 

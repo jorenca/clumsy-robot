@@ -39,13 +39,12 @@ module.exports = {
     const doMove = ({ xr, xrpm, yr, yrpm }) =>
       sendRaw(`M ${xr} ${xrpm} ${yr} ${yrpm} ;`);
 
-
-    const doBasicMove = ({ direction, amount }) => {
+    const doBasicMove = ({ direction, revs, rpm }) => {
       doMove({
-        xr: amount * (direction === 'left' ? -1 : 1),
-        yr: amount * (direction === 'right' ? -1 : 1),
-        xrpm: 80,
-        yrpm: 80
+        xr: revs * (direction === 'left' ? -1 : (direction === 'forward' ? 1 : 0)),
+        yr: revs * (direction === 'right' ? -1 : (direction === 'forward' ? 1 : 0)),
+        xrpm: rpm,
+        yrpm: rpm
       });
     };
 
