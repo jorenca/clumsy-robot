@@ -4,37 +4,33 @@ const superMarioThemeSong = require('./super-mario-theme.json');
 
 const webPort = 3000;
 
-const doMove = ({ xr, xrpm, yr, yrpm }) => `M ${xr} ${xrpm} ${yr} ${yrpm} ;`;
-const doDirectMove = ({ timeMs, frequency, dir }) => `DR ${timeMs} ${frequency} ${dir}`;
-
 const webApp = express();
 
 module.exports = {
-  init: ({ sendToMotorBoardFn, telemetrySSE }) => {
+  init: ({ motorBoard, telemetrySSE }) => {
     webApp.use(express.static(path.join(__dirname, '../bot-control/build')));
     webApp.get('/telemetry', telemetrySSE.init);
 
     webApp.get('/move/:xr/:xrpm/:yr/:yrpm', (req, res) => {
-      sendToMotorBoardFn(doMove(req.params));
+      motorBoard.doMove(req.params);
       res.send(req.params);
     });
 
     webApp.get('/cstop', (req, res) => {
-      sendToMotorBoardFn('CSTOP;');
+      motorBoard.sendRaw('CSTOP;');
       res.send(req.params);
     });
 
     webApp.get('/motor_cmd/:cmd', (req, res) => {
-      sendToMotorBoardFn(req.params.cmd);
+      motorBoard.sendRaw(req.params.cmd);
       res.send(req.params);
     });
 
     webApp.get('/sing', (req, res) => {
       let time = 0;
       superMarioThemeSong.forEach(note => {
-        const move = doDirectMove({ ...note, dir: 1 });
         const startAfter = time;
-        setTimeout(() => sendToMotorBoardFn(move + ' ;'), startAfter);
+        setTimeout(() => motorBoard.doDirectMove({ ...note, dir: 1 }), startAfter);
         time += note.delay * 1.2;
       });
 

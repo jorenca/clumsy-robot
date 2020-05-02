@@ -3,14 +3,15 @@ const _ = require('lodash');
 
 const ProximityInput = require('./proximityInput.js');
 const TelemetryInput = require('./telemetryInput.js');
-const ComBoards = require('./comBoards.js');
+const MotorBoard = require('./motorBoard.js');
 const StatusLed = require('./statusLed.js');
+const IrDetectionModule = require('./irDetectionModule.js');
 
 const Server = require('./server.js');
 
 const telemetrySSE = new SSE();
 
-let sendToMotorBoardFn = _.noop;
+let motorBoard = {};
 
 ProximityInput.create({
   readInterval: 500,
@@ -19,31 +20,31 @@ ProximityInput.create({
 
 StatusLed.init()
 .then(StatusLed.goRed)
-.then(ComBoards.connectToMotorBoard)
-.then(async conn => {
-  conn.addListener(_.throttle(line => console.log(`[MB]> ${line}`), 1000));
+.then(MotorBoard.connect)
+.then(async motorBoardConn => {
+  motorBoard = motorBoardConn;
+  motorBoard.addListener(_.throttle(line => console.log(`[MB]> ${line}`), 1000));
 
-  conn.addListener(line => {
+  motorBoard.addListener(line => {
     if (line[0] != 'H') return;
     telemetrySSE.send(TelemetryInput.recalcWithNewDataLine(line));
   });
 
-  sendToMotorBoardFn = conn.send;
-
-  if (!conn.error) await StatusLed.goGreen();
+  if (!motorBoard.error) await StatusLed.goGreen();
 })
-.then(ComBoards.connectToDetectorBoard)
+.then(IrDetectionModule.connect)
 .then(conn => {
-    conn.addListener(_.throttle(line => console.log(`[IR]> ${line}`), 1000));
+  if (!conn) return;
 
-    conn.addListener(line => {
-      const irData = JSON.parse(line);
-
-      console.log(`[IR]> ${JSON.stringify(irData, null, 2)}`);
-    });
+  setInterval(() => {
+    const move = conn.getMoveToTarget();
+    if (!move || move.direction === 'none') return;
+    console.log(move);
+    motorBoard.doBasicMove(move);
+  }, 1000);
 })
 .then(async () => {
-  Server.init({ sendToMotorBoardFn, telemetrySSE });
+  Server.init({ motorBoard, telemetrySSE });
   await Server.listen();
 })
 .catch(console.error);
