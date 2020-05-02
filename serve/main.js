@@ -14,7 +14,7 @@ const telemetrySSE = new SSE();
 let motorBoard = {};
 
 ProximityInput.create({
-  readInterval: 500,
+  readInterval: 300,
   callback: proximity => telemetrySSE.send({ proximity })
 });
 
@@ -55,7 +55,7 @@ StatusLed.init()
     telemetrySSE,
     onConnect: _.throttle(() => StatusLed.singleFlash(0, 0, 1), 300)
   });
-  
+
   if (!motorBoard.error) await StatusLed.goGreen();
   await Server.listen();
 })
