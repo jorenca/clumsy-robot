@@ -7,7 +7,7 @@ const webPort = 3000;
 const webApp = express();
 
 module.exports = {
-  init: ({ motorBoard, telemetrySSE }) => {
+  init: ({ motorBoard, telemetrySSE, onConnect }) => {
     webApp.use(express.static(path.join(__dirname, '../bot-control/build')));
     webApp.get('/telemetry', telemetrySSE.init);
 
@@ -17,6 +17,7 @@ module.exports = {
     });
 
     webApp.get('/cstop', (req, res) => {
+      onConnect();
       motorBoard.sendRaw('CSTOP;');
       res.send(req.params);
     });

@@ -52,7 +52,11 @@ StatusLed.init()
   nextSchedule();
 })
 .then(async () => {
-  Server.init({ motorBoard, telemetrySSE });
+  Server.init({
+    motorBoard,
+    telemetrySSE,
+    onConnect: _.throttle(() => StatusLed.singleFlash(0, 0, 1), 300)
+  });
   await Server.listen();
 })
 .catch(console.error);
