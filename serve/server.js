@@ -9,9 +9,13 @@ const webApp = express();
 module.exports = {
   init: ({ motorBoard, telemetrySSE, onConnect }) => {
     webApp.use(express.static(path.join(__dirname, '../bot-control/build')));
-    webApp.get('/telemetry', telemetrySSE.init);
+    webApp.get('/telemetry', () => {
+      onConnect();
+      return telemetrySSE.init();
+    });
 
     webApp.get('/move/:xr/:xrpm/:yr/:yrpm', (req, res) => {
+      onConnect();
       motorBoard.doMove(req.params);
       res.send(req.params);
     });
@@ -23,6 +27,7 @@ module.exports = {
     });
 
     webApp.get('/motor_cmd/:cmd', (req, res) => {
+      onConnect();
       motorBoard.sendRaw(req.params.cmd);
       res.send(req.params);
     });
