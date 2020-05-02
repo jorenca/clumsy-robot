@@ -29,8 +29,6 @@ StatusLed.init()
     if (line[0] != 'H') return;
     telemetrySSE.send(TelemetryInput.recalcWithNewDataLine(line));
   });
-
-  if (!motorBoard.error) await StatusLed.goGreen();
 })
 .then(IrDetectionModule.connect)
 .then(conn => {
@@ -57,6 +55,8 @@ StatusLed.init()
     telemetrySSE,
     onConnect: _.throttle(() => StatusLed.singleFlash(0, 0, 1), 300)
   });
+  
+  if (!motorBoard.error) await StatusLed.goGreen();
   await Server.listen();
 })
 .catch(console.error);
