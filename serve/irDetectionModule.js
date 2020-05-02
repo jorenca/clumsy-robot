@@ -40,7 +40,7 @@ module.exports = {
     const portsList = await SerialPort.list();
     const comDevice = _(portsList)
       .filter({
-        serialNumber: '6&156d72de&0&2',
+        //serialNumber: '6&156d72de&0&2',
         productId: '7523'
       }).first();
     if (!comDevice) {
