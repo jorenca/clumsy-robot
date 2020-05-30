@@ -1,7 +1,7 @@
 const gpio = require('rpi-gpio');
 const gpiop = gpio.promise;
 
-const RGB_LED_PINS = [22, 17, 27];
+const RGB_LED_PINS = [25, 23, 24];
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 let currentState = { r: 0, g: 0, b: 0 };
