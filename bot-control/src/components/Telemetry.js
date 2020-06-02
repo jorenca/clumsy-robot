@@ -37,14 +37,18 @@ class Telemetry extends React.Component {
   }
 }
 
-const Battery = ({ battery }) =>
-<div >
-  <table width="100%">
-    <tr><td>Bus voltage</td><td>{battery.busV || '???'}V</td></tr>
-    <tr><td>Power draw</td><td>{battery.power || '???'}W</td></tr>
-    <tr><td>Current</td><td>{battery.current || '???'}mA</td></tr>
-  </table>
-</div>
+const Battery = ({ battery = {} }) => {
+  const { busV = '???', power = '???', current = '???' } = battery;
+  return (
+    <div>
+      <table width="100%">
+        <tr><td>Bus voltage</td><td>{busV || '???'}V</td></tr>
+        <tr><td>Power draw</td><td>{power || '???'}W</td></tr>
+        <tr><td>Current</td><td>{current || '???'}mA</td></tr>
+      </table>
+    </div>
+  );
+};
 
 const Heading = ({ heading }) =>
 <div className="telemetry-row">
