@@ -1,6 +1,7 @@
 const SSE = require('express-sse');
 const _ = require('lodash');
 
+const PowerInput = require('./powerInput.js');
 const ProximityInput = require('./proximityInput.js');
 const TelemetryInput = require('./telemetryInput.js');
 const MotorBoard = require('./motorBoard.js');
@@ -16,6 +17,11 @@ let motorBoard = {};
 ProximityInput.create({
   readInterval: 300,
   callback: proximity => telemetrySSE.send({ proximity })
+});
+
+PowerInput.create({
+  readInterval: 300,
+  callback: battery => telemetrySSE.send({ battery })
 });
 
 StatusLed.init()
