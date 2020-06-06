@@ -136,8 +136,6 @@ module.exports = (address = INA219_ADDRESS, busNumber = 1) => {
   	return res.readInt16BE();
   };
 
-
-
   return {
     /**
       *  Configures to INA219 to be able to measure up to 32V and 1A of current.
