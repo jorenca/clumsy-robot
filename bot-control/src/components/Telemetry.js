@@ -1,6 +1,7 @@
 import React from 'react';
-import Compass from './Compass';
-import XYPlot from './XYPlot';
+import Compass from './telemetry/Compass';
+import XYPlot from './telemetry/XYPlot';
+import Battery from './telemetry/Battery';
 import './Telemetry.scss';
 
 const TELEMETRY_ADDRESS = "/telemetry";
@@ -36,19 +37,6 @@ class Telemetry extends React.Component {
     );
   }
 }
-
-const Battery = ({ battery = {} }) => {
-  const { busV = '???', power = '???', current = '???' } = battery;
-  return (
-    <div>
-      <table width="100%">
-        <tr><td>Bus voltage</td><td>{busV || '???'}V</td></tr>
-        <tr><td>Power draw</td><td>{power || '???'}W</td></tr>
-        <tr><td>Current</td><td>{current || '???'}mA</td></tr>
-      </table>
-    </div>
-  );
-};
 
 const Heading = ({ heading }) =>
 <div className="telemetry-row">
