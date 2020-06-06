@@ -29,31 +29,22 @@ class Telemetry extends React.Component {
     return (
       <div className="telemetry-container">
         Telemetry
+        <hr/>
         <Battery battery={battery} />
-        <Heading heading={heading} />
-        <Acceleration acceleration={acceleration} />
-        <Temperature temperature={temperature} />
+        <hr/>
+        <div className="telemetry-row">
+          <div style={{ textAlign: 'left' }}>
+            <div style={{ width: '100px' }}>Heading: {heading}</div>
+            <div style={{ backgroundColor: temperature < 35 ? '' : 'orange'}}>
+              Temperature: {temperature}C
+            </div>
+          </div>
+          <Compass heading={heading} />
+          <XYPlot {...acceleration} bound={1024} />
+        </div>
       </div>
     );
   }
 }
-
-const Heading = ({ heading }) =>
-<div className="telemetry-row">
-  <div style={{ width: '100px' }}>HDG: {heading}</div>
-  <Compass heading={heading} />
-</div>
-
-const Acceleration = ({ acceleration }) =>
-<div className="telemetry-row">
-  <div style={{ width: '200px' }}>Acceleration</div>
-  <XYPlot {...acceleration} bound={1024} />
-</div>;
-
-const Temperature = ({ temperature }) =>
-<div className="telemetry-row">
-  Temperature: {temperature}
-</div>
-
 
 export default Telemetry;

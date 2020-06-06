@@ -3,8 +3,8 @@ import './XYPlot.scss';
 
 class XYPlot extends React.Component {
   static defaultProps = {
-    width: 200, // px
-    height: 200, // px
+    width: 120, // px
+    height: 120, // px
     x: 0,
     y: 0,
     bound: 100,
