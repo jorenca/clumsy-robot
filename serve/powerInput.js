@@ -6,7 +6,8 @@ module.exports.create = ({ readInterval, callback }) => {
     const sendData = async () => {
       const busV = await ina219.getBusVoltage_V();
       const currentmA = ina219.getCurrent_mA();
-      const power = busV * currentmA * 1000;
+      const current = currentma / 1000;
+      const power = busV * current;
 
       callback({ busV, power, current });
     };
