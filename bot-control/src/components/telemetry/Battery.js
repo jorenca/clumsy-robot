@@ -9,15 +9,16 @@ const classNames = (map) => _(map)
   .join(' ')
 
 const Battery = ({ battery = {} }) => {
-  const percent = ((battery.busV / 3 - 3.3)/0.9)*100;
+  const percent = _.floor(((battery.batteryV / 3 - 3.3) / 0.9 ) * 100);
 
   return (
     <div className="battery-indicator">
       <table width="100%">
         <tbody>
-          <tr><td>Bus voltage</td><td>{_.floor(battery.busV, 1) || '???'}V</td></tr>
-          <tr><td>Current</td><td>{_.ceil(battery.current, 2) || '???'}A</td></tr>
-          <tr><td>Power draw</td><td>{_.round(battery.power, 1) || '???'}W</td></tr>
+          <tr><td>Battery voltage</td><td>{_.floor(battery.batteryV, 1).toFixed(1)} V</td></tr>
+          <tr><td>Bus voltage</td><td>{_.floor(battery.busV, 1).toFixed(1)} V</td></tr>
+          <tr><td>Current</td><td>{_.ceil(battery.current, 2).toFixed(2)} A</td></tr>
+          <tr><td>Power draw</td><td>{_.ceil(battery.current * battery.busV, 1).toFixed(1)} W</td></tr>
         </tbody>
       </table>
 
@@ -29,7 +30,7 @@ const Battery = ({ battery = {} }) => {
             high: percent > 50,
             medium: percent <=50 && percent > 20,
             low: percent <= 20
-          })} style={{ width: _.round(percent, 1) }}></div>
+          })} style={{ width: percent }}></div>
         </div>
       </div>
     </div>
