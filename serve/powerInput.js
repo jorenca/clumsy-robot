@@ -1,22 +1,23 @@
-const i2c = require('i2c-bus');
-const i2c1 = i2c && i2c.openSync(1);
+const ina219 = require('./ina219.js');
 
 const CURRENT_SENSOR_I2C_ADDR = 0x41;
 const INA219_REG_BUSVOLTAGE = 0x02;
 const INA219_REG_POWER = 0x03;
 const INA219_REG_CURRENT = 0x04;
 
-module.exports.create = ({ readInterval, callback }) => {
-    const sendData = () => {
-      const busRaw = i2c1.readByteSync(CURRENT_SENSOR_I2C_ADDR, INA219_REG_BUSVOLTAGE);
-      const busV = (busRaw >> 3) * 4;
+ina219.init(CURRENT_SENSOR_I2C_ADDR);
 
-      const power = i2c1.readByteSync(CURRENT_SENSOR_I2C_ADDR, INA219_REG_POWER);
-      const current = i2c1.readByteSync(CURRENT_SENSOR_I2C_ADDR, INA219_REG_CURRENT);
+module.exports.create = ({ readInterval, callback }) => {
+    const sendData = async () => {
+      const busV = await ina219.getBusVoltage_V();
+      const currentmA = ina219.getCurrent_mA();
+      const power = busV * currentmA * 1000;
 
       callback({ busV, power, current });
     };
-    if (i2c1) {
-      setInterval(sendData, readInterval);
+
+    if (ina219) {
+      ina219.calibrate32V2A()
+        .then(() => setInterval(sendData, readInterval));
     }
   };
