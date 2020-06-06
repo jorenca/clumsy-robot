@@ -14,12 +14,22 @@ const telemetrySSE = new SSE();
 
 let motorBoard = {};
 
+let lastProximityValue = 0;
 ProximityInput.create({
   readInterval: 300,
   callback: proximity => {
     // TODO find a better place for this
     const dist = (0.237 * proximity - 0.39).toPrecision(3);
-    if (dist < 7 && motorBoard.cstop) motorBoard.cstop();
+
+    // Emergency stop to avoid hitting a wall
+    if (dist < 10
+      && lastProximityValue > (proximity + 0.3) // only if we are moving ahead
+      && motorBoard.cstop
+    ) {
+      motorBoard.cstop();
+    }
+
+    lastProximityValue = proximity;
     telemetrySSE.send({ proximity });
   }
 });
