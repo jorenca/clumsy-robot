@@ -1,6 +1,6 @@
 
 const CURRENT_SENSOR_I2C_ADDR = 0x41;
-const ina219 = require('./ina219.js')(CURRENT_SENSOR_I2C_ADDR);
+const ina219 = require('ina219-async')(CURRENT_SENSOR_I2C_ADDR);
 
 module.exports.create = ({ readInterval, callback }) => {
     const sendData = async () => {
