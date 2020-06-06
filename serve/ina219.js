@@ -110,248 +110,224 @@ var INA219_REG_CURRENT                     	= 0x04
 // ===========================================================================
 var INA219_REG_CALIBRATION                 	= 0x05
 // ===========================================================================
-
-
-
 /**
   * Called to initilize the INA219 board, you should calibrate it after this.
   * @param {string} address - Address you want to use. Defaults to INA219_ADDRESS
   * @param {integer} busNumber - the number of the I2C bus/adapter to open, 0 for /dev/i2c-0, 1 for /dev/i2c-1, (See github.com/fivdi/i2c-bus)
   */
-Ina219.prototype.init = (address = INA219_ADDRESS, busNumber = 1) => {
-	this.currentDivider_mA = 0;
-	this.powerDivider_mW = 0;
-	this.calValue = 0;
-	this.address = address;
+module.exports = (address = INA219_ADDRESS, busNumber = 1) => {
+	let currentDivider_mA = 0;
+	let powerDivider_mW = 0;
+	let calValue = 0;
 
-	this.wire = i2c.openSync(busNumber);
+	const wire = i2c.openSync(busNumber);
+
+  const writeRegister = async (register, value) => {
+  	var bytes = Buffer.alloc(2);
+  	bytes[0] = (value >> 8) & 0xFF;
+  	bytes[1] = value & 0xFF;
+
+  	wire.writeI2cBlockSync(address, register, 2, bytes);
+  };
+
+  const readRegister = async (register) => {
+  	var res = Buffer.alloc(2);
+  	wire.readI2cBlockSync(address, register, 2, res);
+  	return res.readInt16BE();
+  };
+
+
+
+  return {
+    /**
+      *  Configures to INA219 to be able to measure up to 32V and 1A of current.
+      *  Each unit of current corresponds to 40uA, and each unit of power corresponds
+      *  to 800mW. Counter overflow occurs at 1.3A.
+      *  Note: These calculations assume a 0.1 ohm resistor is present
+      */
+    calibrate32V1A: async () => {
+    	// By default we use a pretty huge range for the input voltage,
+    	// which probably isn't the most appropriate choice for system
+    	// that don't use a lot of power.  But all of the calculations
+    	// are shown below if you want to change the settings.  You will
+    	// also need to change any relevant register settings, such as
+    	// setting the VBUS_MAX to 16V instead of 32V, etc.
+
+    	// VBUS_MAX = 32V		(Assumes 32V, can also be set to 16V)
+    	// VSHUNT_MAX = 0.32	(Assumes Gain 8, 320mV, can also be 0.16, 0.08, 0.04)
+    	// RSHUNT = 0.1			(Resistor value in ohms)
+
+    	// 1. Determine max possible current
+    	// MaxPossible_I = VSHUNT_MAX / RSHUNT
+    	// MaxPossible_I = 3.2A
+
+    	// 2. Determine max expected current
+    	// MaxExpected_I = 1.0A
+
+    	// 3. Calculate possible range of LSBs (Min = 15-bit, Max = 12-bit)
+    	// MinimumLSB = MaxExpected_I/32767
+    	// MinimumLSB = 0.0000305             (30.5�A per bit)
+    	// MaximumLSB = MaxExpected_I/4096
+    	// MaximumLSB = 0.000244              (244�A per bit)
+
+    	// 4. Choose an LSB between the min and max values
+    	//    (Preferrably a roundish number close to MinLSB)
+    	// CurrentLSB = 0.0000400 (40�A per bit)
+
+    	// 5. Compute the calibration register
+    	// Cal = trunc (0.04096 / (Current_LSB * RSHUNT))
+    	// Cal = 10240 (0x2800)
+
+    	calValue = 10240;
+
+    	// 6. Calculate the power LSB
+    	// PowerLSB = 20 * CurrentLSB
+    	// PowerLSB = 0.0008 (800�W per bit)
+
+    	// 7. Compute the maximum current and shunt voltage values before overflow
+    	//
+    	// Max_Current = Current_LSB * 32767
+    	// Max_Current = 1.31068A before overflow
+    	//
+    	// If Max_Current > Max_Possible_I then
+    	//    Max_Current_Before_Overflow = MaxPossible_I
+    	// Else
+    	//    Max_Current_Before_Overflow = Max_Current
+    	// End If
+    	//
+    	// ... In this case, we're good though since Max_Current is less than MaxPossible_I
+    	//
+    	// Max_ShuntVoltage = Max_Current_Before_Overflow * RSHUNT
+    	// Max_ShuntVoltage = 0.131068V
+    	//
+    	// If Max_ShuntVoltage >= VSHUNT_MAX
+    	//    Max_ShuntVoltage_Before_Overflow = VSHUNT_MAX
+    	// Else
+    	//    Max_ShuntVoltage_Before_Overflow = Max_ShuntVoltage
+    	// End If
+
+    	// 8. Compute the Maximum Power
+    	// MaximumPower = Max_Current_Before_Overflow * VBUS_MAX
+    	// MaximumPower = 1.31068 * 32V
+    	// MaximumPower = 41.94176W
+
+    	// Set multipliers to convert raw current/power values
+      currentDivider_mA = 25;      // Current LSB = 40uA per bit (1000/40 = 25)
+      powerDivider_mW = 2;         // Power LSB = 800�W per bit
+
+    	return writeRegister(INA219_REG_CALIBRATION, calValue)
+        .then(() => {
+      		var config = INA219_CONFIG_BVOLTAGERANGE_32V |
+      						INA219_CONFIG_GAIN_8_320MV |
+      						INA219_CONFIG_BADCRES_12BIT |
+      						INA219_CONFIG_SADCRES_12BIT_1S_532US |
+      						INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS;
+
+      		return writeRegister(INA219_REG_CONFIG, config);
+        });
+    },
+
+    calibrate32V2A: async () => {
+      // By default we use a pretty huge range for the input voltage,
+      // which probably isn't the most appropriate choice for system
+      // that don't use a lot of power.  But all of the calculations
+      // are shown below if you want to change the settings.  You will
+      // also need to change any relevant register settings, such as
+      // setting the VBUS_MAX to 16V instead of 32V, etc.
+
+      // VBUS_MAX = 32V             (Assumes 32V, can also be set to 16V)
+      // VSHUNT_MAX = 0.32          (Assumes Gain 8, 320mV, can also be 0.16, 0.08,
+      // 0.04) RSHUNT = 0.1               (Resistor value in ohms)
+
+      // 1. Determine max possible current
+      // MaxPossible_I = VSHUNT_MAX / RSHUNT
+      // MaxPossible_I = 3.2A
+
+      // 2. Determine max expected current
+      // MaxExpected_I = 2.0A
+
+      // 3. Calculate possible range of LSBs (Min = 15-bit, Max = 12-bit)
+      // MinimumLSB = MaxExpected_I/32767
+      // MinimumLSB = 0.000061              (61uA per bit)
+      // MaximumLSB = MaxExpected_I/4096
+      // MaximumLSB = 0,000488              (488uA per bit)
+
+      // 4. Choose an LSB between the min and max values
+      //    (Preferrably a roundish number close to MinLSB)
+      // CurrentLSB = 0.0001 (100uA per bit)
+
+      // 5. Compute the calibration register
+      // Cal = trunc (0.04096 / (Current_LSB * RSHUNT))
+      // Cal = 4096 (0x1000)
+
+      calValue = 4096;
+
+      // 6. Calculate the power LSB
+      // PowerLSB = 20 * CurrentLSB
+      // PowerLSB = 0.002 (2mW per bit)
+
+      // 7. Compute the maximum current and shunt voltage values before overflow
+      //
+      // Max_Current = Current_LSB * 32767
+      // Max_Current = 3.2767A before overflow
+      //
+      // If Max_Current > Max_Possible_I then
+      //    Max_Current_Before_Overflow = MaxPossible_I
+      // Else
+      //    Max_Current_Before_Overflow = Max_Current
+      // End If
+      //
+      // Max_ShuntVoltage = Max_Current_Before_Overflow * RSHUNT
+      // Max_ShuntVoltage = 0.32V
+      //
+      // If Max_ShuntVoltage >= VSHUNT_MAX
+      //    Max_ShuntVoltage_Before_Overflow = VSHUNT_MAX
+      // Else
+      //    Max_ShuntVoltage_Before_Overflow = Max_ShuntVoltage
+      // End If
+
+      // 8. Compute the Maximum Power
+      // MaximumPower = Max_Current_Before_Overflow * VBUS_MAX
+      // MaximumPower = 3.2 * 32V
+      // MaximumPower = 102.4W
+
+    	// Set multipliers to convert raw current/power values
+    	currentDivider_mA = 10;      // Current LSB = 40uA per bit (1000/40 = 25)
+      powerDivider_mW = 2;         // Power LSB = 800�W per bit
+
+    	return writeRegister(INA219_REG_CALIBRATION, calValue)
+        .then(() => {
+      		var config = INA219_CONFIG_BVOLTAGERANGE_32V |
+      						INA219_CONFIG_GAIN_8_320MV |
+      						INA219_CONFIG_BADCRES_12BIT |
+      						INA219_CONFIG_SADCRES_12BIT_1S_532US |
+      						INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS;
+
+      		return writeRegister(INA219_REG_CONFIG, config);
+        });
+    },
+
+    /**
+      *  Gets the bus voltage in volts
+      */
+    getBusVoltage_V: async () => readRegister(INA219_REG_BUSVOLTAGE)
+      .then(value => (value >> 3) * 4 * 0.001),
+
+    /**
+      * Gets the shunt voltage in mV (so +-327mV)
+      */
+    getShuntVoltage_mV: async () => readRegister(INA219_REG_SHUNTVOLTAGE)
+        .then(value => value * 0.01),
+
+    /**
+      * Gets the current value in mA, taking into account the config settings and current LSB
+      */
+  	// Sometimes a sharp load will reset the INA219, which will
+  	// reset the cal register, meaning CURRENT and POWER will
+  	// not be available ... avoid this by always setting a cal
+  	// value even if it's an unfortunate extra step
+    getCurrent_mA: async () => writeRegister(INA219_REG_CALIBRATION, calValue)
+        .then(() => readRegister(INA219_REG_CURRENT))
+        .then(value => value / currentDivider_mA)
+  };
 };
-
-/**
-  * Writes over I2C
-  * @param {integer} register - Register to read from (One of INA219_REG_*)
-  * @param {integer} value - Value to be written
-  */
-Ina219.prototype.writeRegister = async function (register, value) {
-	var bytes = Buffer.alloc(2);
-
-	bytes[0] = (value >> 8) & 0xFF;
-	bytes[1] = value & 0xFF
-
-	this.wire.writeI2cBlockSync(this.address, register, 2, bytes);
-}
-
-/**
-  * Reads a 16 bit value over I2C
-  * @param {integer} register - Register to read from (One of INA219_REG_*)
-  */
-Ina219.prototype.readRegister = async (register) => {
-	var res = Buffer.alloc(2);
-	this.wire.readI2cBlockSync(this.address, register, 2, res);
-	var value = res.readInt16BE();
-
-	return value;
-};
-
-/**
-  *  Configures to INA219 to be able to measure up to 32V and 1A of current.
-  *  Each unit of current corresponds to 40uA, and each unit of power corresponds
-  *  to 800mW. Counter overflow occurs at 1.3A.
-  *  Note: These calculations assume a 0.1 ohm resistor is present
-  */
-Ina219.prototype.calibrate32V1A = async () => {
-	// By default we use a pretty huge range for the input voltage,
-	// which probably isn't the most appropriate choice for system
-	// that don't use a lot of power.  But all of the calculations
-	// are shown below if you want to change the settings.  You will
-	// also need to change any relevant register settings, such as
-	// setting the VBUS_MAX to 16V instead of 32V, etc.
-
-	// VBUS_MAX = 32V		(Assumes 32V, can also be set to 16V)
-	// VSHUNT_MAX = 0.32	(Assumes Gain 8, 320mV, can also be 0.16, 0.08, 0.04)
-	// RSHUNT = 0.1			(Resistor value in ohms)
-
-	// 1. Determine max possible current
-	// MaxPossible_I = VSHUNT_MAX / RSHUNT
-	// MaxPossible_I = 3.2A
-
-	// 2. Determine max expected current
-	// MaxExpected_I = 1.0A
-
-	// 3. Calculate possible range of LSBs (Min = 15-bit, Max = 12-bit)
-	// MinimumLSB = MaxExpected_I/32767
-	// MinimumLSB = 0.0000305             (30.5�A per bit)
-	// MaximumLSB = MaxExpected_I/4096
-	// MaximumLSB = 0.000244              (244�A per bit)
-
-	// 4. Choose an LSB between the min and max values
-	//    (Preferrably a roundish number close to MinLSB)
-	// CurrentLSB = 0.0000400 (40�A per bit)
-
-	// 5. Compute the calibration register
-	// Cal = trunc (0.04096 / (Current_LSB * RSHUNT))
-	// Cal = 10240 (0x2800)
-
-	this.calValue = 10240;
-
-	// 6. Calculate the power LSB
-	// PowerLSB = 20 * CurrentLSB
-	// PowerLSB = 0.0008 (800�W per bit)
-
-	// 7. Compute the maximum current and shunt voltage values before overflow
-	//
-	// Max_Current = Current_LSB * 32767
-	// Max_Current = 1.31068A before overflow
-	//
-	// If Max_Current > Max_Possible_I then
-	//    Max_Current_Before_Overflow = MaxPossible_I
-	// Else
-	//    Max_Current_Before_Overflow = Max_Current
-	// End If
-	//
-	// ... In this case, we're good though since Max_Current is less than MaxPossible_I
-	//
-	// Max_ShuntVoltage = Max_Current_Before_Overflow * RSHUNT
-	// Max_ShuntVoltage = 0.131068V
-	//
-	// If Max_ShuntVoltage >= VSHUNT_MAX
-	//    Max_ShuntVoltage_Before_Overflow = VSHUNT_MAX
-	// Else
-	//    Max_ShuntVoltage_Before_Overflow = Max_ShuntVoltage
-	// End If
-
-	// 8. Compute the Maximum Power
-	// MaximumPower = Max_Current_Before_Overflow * VBUS_MAX
-	// MaximumPower = 1.31068 * 32V
-	// MaximumPower = 41.94176W
-
-	// Set multipliers to convert raw current/power values
-  this.currentDivider_mA = 25;      // Current LSB = 40uA per bit (1000/40 = 25)
-  this.powerDivider_mW = 2;         // Power LSB = 800�W per bit
-
-	var $this = this;
-	return this.writeRegister(INA219_REG_CALIBRATION, this.calValue)
-    .then(() => {
-  		var config = INA219_CONFIG_BVOLTAGERANGE_32V |
-  						INA219_CONFIG_GAIN_8_320MV |
-  						INA219_CONFIG_BADCRES_12BIT |
-  						INA219_CONFIG_SADCRES_12BIT_1S_532US |
-  						INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS;
-
-  		return $this.writeRegister(INA219_REG_CONFIG, config);
-    });
-};
-
-Ina219.prototype.calibrate32V2A = async () => {
-  // By default we use a pretty huge range for the input voltage,
-  // which probably isn't the most appropriate choice for system
-  // that don't use a lot of power.  But all of the calculations
-  // are shown below if you want to change the settings.  You will
-  // also need to change any relevant register settings, such as
-  // setting the VBUS_MAX to 16V instead of 32V, etc.
-
-  // VBUS_MAX = 32V             (Assumes 32V, can also be set to 16V)
-  // VSHUNT_MAX = 0.32          (Assumes Gain 8, 320mV, can also be 0.16, 0.08,
-  // 0.04) RSHUNT = 0.1               (Resistor value in ohms)
-
-  // 1. Determine max possible current
-  // MaxPossible_I = VSHUNT_MAX / RSHUNT
-  // MaxPossible_I = 3.2A
-
-  // 2. Determine max expected current
-  // MaxExpected_I = 2.0A
-
-  // 3. Calculate possible range of LSBs (Min = 15-bit, Max = 12-bit)
-  // MinimumLSB = MaxExpected_I/32767
-  // MinimumLSB = 0.000061              (61uA per bit)
-  // MaximumLSB = MaxExpected_I/4096
-  // MaximumLSB = 0,000488              (488uA per bit)
-
-  // 4. Choose an LSB between the min and max values
-  //    (Preferrably a roundish number close to MinLSB)
-  // CurrentLSB = 0.0001 (100uA per bit)
-
-  // 5. Compute the calibration register
-  // Cal = trunc (0.04096 / (Current_LSB * RSHUNT))
-  // Cal = 4096 (0x1000)
-
-  this.calValue = 4096;
-
-  // 6. Calculate the power LSB
-  // PowerLSB = 20 * CurrentLSB
-  // PowerLSB = 0.002 (2mW per bit)
-
-  // 7. Compute the maximum current and shunt voltage values before overflow
-  //
-  // Max_Current = Current_LSB * 32767
-  // Max_Current = 3.2767A before overflow
-  //
-  // If Max_Current > Max_Possible_I then
-  //    Max_Current_Before_Overflow = MaxPossible_I
-  // Else
-  //    Max_Current_Before_Overflow = Max_Current
-  // End If
-  //
-  // Max_ShuntVoltage = Max_Current_Before_Overflow * RSHUNT
-  // Max_ShuntVoltage = 0.32V
-  //
-  // If Max_ShuntVoltage >= VSHUNT_MAX
-  //    Max_ShuntVoltage_Before_Overflow = VSHUNT_MAX
-  // Else
-  //    Max_ShuntVoltage_Before_Overflow = Max_ShuntVoltage
-  // End If
-
-  // 8. Compute the Maximum Power
-  // MaximumPower = Max_Current_Before_Overflow * VBUS_MAX
-  // MaximumPower = 3.2 * 32V
-  // MaximumPower = 102.4W
-
-	// Set multipliers to convert raw current/power values
-	this.currentDivider_mA = 10;      // Current LSB = 40uA per bit (1000/40 = 25)
-  this.powerDivider_mW = 2;         // Power LSB = 800�W per bit
-
-	var $this = this;
-	return this.writeRegister(INA219_REG_CALIBRATION, this.calValue)
-    .then(() => {
-  		var config = INA219_CONFIG_BVOLTAGERANGE_32V |
-  						INA219_CONFIG_GAIN_8_320MV |
-  						INA219_CONFIG_BADCRES_12BIT |
-  						INA219_CONFIG_SADCRES_12BIT_1S_532US |
-  						INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS;
-
-  		return $this.writeRegister(INA219_REG_CONFIG, config);
-    });
-}
-
-/**
-  *  Gets the bus voltage in volts
-  */
-Ina219.prototype.getBusVoltage_V = async () =>
-  this.readRegister(INA219_REG_BUSVOLTAGE)
-    .then(value => (value >> 3) * 4)
-    .then(value => value * 0.001);
-
-/**
-  * Gets the shunt voltage in mV (so +-327mV)
-  */
-Ina219.prototype.getShuntVoltage_mV = async () =>
-  this.readRegister(INA219_REG_SHUNTVOLTAGE)
-    .then(value => value * 0.01);
-
-/**
-  * Gets the current value in mA, taking into account the config settings and current LSB
-  */
-Ina219.prototype.getCurrent_mA = async () => {
-	var $this = this;
-	// Sometimes a sharp load will reset the INA219, which will
-	// reset the cal register, meaning CURRENT and POWER will
-	// not be available ... avoid this by always setting a cal
-	// value even if it's an unfortunate extra step
-	var	$this = this;
-	return this.writeRegister(INA219_REG_CALIBRATION, this.calValue)
-    .then(() => $this.readRegister(INA219_REG_CURRENT))
-    .then(value => value / $this.currentDivider_mA);
-};
-
-// export is a Singleton
-module.exports = new Ina219();
