@@ -9,14 +9,14 @@ const classNames = (map) => _(map)
   .join(' ')
 
 const Battery = ({ battery = {} }) => {
-  const percent = ((_.round(battery.busV, 2) / 3 - 3.7)/0.5)*100;
+  const percent = ((_.round(battery.busV, 2) / 3 - 3.4)/0.8)*100;
 
   return (
     <div className="battery-indicator">
       <table width="100%">
         <tbody>
           <tr><td>Bus voltage</td><td>{_.round(battery.busV, 1) || '???'}V</td></tr>
-          <tr><td>Current</td><td>{_.round(battery.current, 2) || '???'}mA</td></tr>
+          <tr><td>Current</td><td>{_.round(battery.current, 2) || '???'}A</td></tr>
           <tr><td>Power draw</td><td>{_.round(battery.power, 1) || '???'}W</td></tr>
         </tbody>
       </table>

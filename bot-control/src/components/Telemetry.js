@@ -42,7 +42,6 @@ const Heading = ({ heading }) =>
 <div className="telemetry-row">
   <div style={{ width: '100px' }}>HDG: {heading}</div>
   <Compass heading={heading} />
-  <Compass heading={heading} isFixedPointer={true} />
 </div>
 
 const Acceleration = ({ acceleration }) =>
