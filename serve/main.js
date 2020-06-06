@@ -18,7 +18,7 @@ ProximityInput.create({
   readInterval: 300,
   callback: proximity => {
     // TODO find a better place for this
-    const dist = x => (0.237 * proximity - 0.39).toPrecision(3);
+    const dist = (0.237 * proximity - 0.39).toPrecision(3);
     if (dist < 7 && motorBoard.cstop) motorBoard.cstop();
     telemetrySSE.send({ proximity });
   }
