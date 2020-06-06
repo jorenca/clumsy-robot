@@ -51,6 +51,7 @@ module.exports = {
     return {
       addListener: callb => comParser.on('data', callb),
       sendRaw,
+      cstop: sendRaw('CSTOP;'),
       doBasicMove,
       doMove,
       doDirectMove: ({ timeMs, frequency, dir }) => sendRaw(`DR ${timeMs} ${frequency} ${dir} ;`)
