@@ -18,7 +18,7 @@ const Battery = ({ battery = {} }) => {
           <tr><td>Battery voltage</td><td>{_.floor(battery.batteryV, 1).toFixed(1)} V</td></tr>
           <tr><td>Bus voltage</td><td>{_.floor(battery.busV, 1).toFixed(1)} V</td></tr>
           <tr><td>Current</td><td>{_.ceil(battery.current, 2).toFixed(2)} A</td></tr>
-          <tr><td>Power draw</td><td>{_.ceil(battery.current * battery.busV, 1).toFixed(1)} W</td></tr>
+          <tr><td>Power draw</td><td>{_.ceil(battery.current * battery.batteryV, 1).toFixed(1)} W</td></tr>
         </tbody>
       </table>
 
