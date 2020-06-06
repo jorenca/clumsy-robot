@@ -16,14 +16,14 @@ let motorBoard = {};
 
 let lastProximityValue = 0;
 ProximityInput.create({
-  readInterval: 300,
+  readInterval: 200,
   callback: proximity => {
     // TODO find a better place for this
     const dist = (0.237 * proximity - 0.39).toPrecision(3);
 
     // Emergency stop to avoid hitting a wall
     if (dist < 10
-      && lastProximityValue > (proximity + 0.3) // only if we are moving ahead
+      && lastProximityValue > (proximity + 1) // only if we are moving ahead
       && motorBoard.cstop
     ) {
       motorBoard.cstop();
@@ -35,7 +35,7 @@ ProximityInput.create({
 });
 
 PowerInput.create({
-  readInterval: 300,
+  readInterval: 200,
   callback: battery => telemetrySSE.send({ battery })
 });
 
