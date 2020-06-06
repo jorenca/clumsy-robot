@@ -1,4 +1,9 @@
 .feed-container {
+  img {
+    position: absolute;
+    z-index: -99;
+    width: 100%;
+  }
 }
 
 .proximity-gauge-container {
