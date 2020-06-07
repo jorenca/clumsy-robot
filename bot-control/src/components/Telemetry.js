@@ -33,14 +33,15 @@ class Telemetry extends React.Component {
         <Battery battery={battery} />
         <hr/>
         <div className="telemetry-row">
-          <div style={{ textAlign: 'left' }}>
-            <div style={{ width: '100px' }}>Heading: {heading}</div>
-            <div style={{ backgroundColor: temperature < 35 ? '' : 'orange'}}>
-              Temperature: {temperature}C
-            </div>
-          </div>
           <Compass heading={heading} />
           <XYPlot {...acceleration} bound={1024} />
+        </div>
+
+        <div style={{ textAlign: 'left' }}>
+          <div style={{ width: '100px' }}>Heading: {heading}</div>
+          <div style={{ backgroundColor: temperature < 35 ? '' : 'orange'}}>
+            Temperature: {temperature}C
+          </div>
         </div>
       </div>
     );
