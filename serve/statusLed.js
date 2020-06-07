@@ -28,7 +28,7 @@ module.exports = {
   singleFlash: async (r, g, b) => {
     const beforeFlashState = {...currentState};
     await setColor({ r, g, b });
-    await sleep(100);
+    await sleep(50);
     await setColor(beforeFlashState);
   },
   goGreen: async () => await setColor({ r: 0, g: 1, b: 0 }),
