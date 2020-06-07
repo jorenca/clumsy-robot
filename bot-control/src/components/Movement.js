@@ -18,13 +18,15 @@ export default function Movement({ sharedTelemetry }) {
   return (
     <div className="movement-container">
       Movement
-      <SpeedSlider speed={speed} setSpeed={(e) => setSpeed(e.target.value)} />
 
       <Keypad move={move} cstop={cstop} />
-      <Planner move={move} cTurn={cTurn} sharedTelemetry={sharedTelemetry} />
+      <SpeedSlider speed={speed} setSpeed={(e) => setSpeed(e.target.value)} />
     </div>
   );
 }
+// FIXME GEORGI implement move Planner
+//       <Planner move={move} cTurn={cTurn} sharedTelemetry={sharedTelemetry} />
+
 
 const SpeedSlider = ({ speed, setSpeed }) =>
 <div className="speed-slider">
@@ -65,11 +67,9 @@ const Keypad = ({ move, cstop }) => {
         <tbody>
           <tr>
             <td />
-            <td />
             <td>
-              <Control onClick={() => moveUp(1)} isActive={upActive}>🡅🡅</Control>
+              <Control onClick={() => moveUp(1)} isActive={upActive}>🡅</Control>
             </td>
-            <td />
             <td>
               <img
                 src={gamepadIcon}
@@ -82,36 +82,18 @@ const Keypad = ({ move, cstop }) => {
               </td>
           </tr>
           <tr>
-            <td />
-            <td />
-            <td><Control onClick={() => moveUp(0.2)}>🡅</Control></td>
-            <td />
-            <td />
-          </tr>
-          <tr>
-            <td><Control onClick={() => moveLeft(1)} isActive={leftActive}>&lt;&lt;</Control></td>
-            <td><Control onClick={() => moveLeft(0.2)}>&lt;</Control></td>
-            <td style={{ backgroundColor: 'gray' }} />
-            <td><Control onClick={() => moveRight(0.2)}>&gt;</Control></td>
-            <td><Control onClick={() => moveRight(1)} isActive={rightActive}>&gt;&gt;</Control></td>
-          </tr>
-          <tr>
-            <td />
-            <td />
-            <td><Control onClick={() => moveDown(0.2)}>🡇</Control></td>
-            <td />
-            <td />
-          </tr>
-          <tr>
-            <td />
-            <td />
-            <td><Control onClick={() => moveDown(1)} isActive={downActive}>🡇🡇</Control></td>
-            <td />
+            <td><Control onClick={() => moveLeft(0.1)} isActive={leftActive}>&lt;</Control></td>
             <td>
               <Control onClick={() => cstop()} style={{ backgroundColor: 'red' }}>
                 STOP
               </Control>
             </td>
+            <td><Control onClick={() => moveRight(0.1)} isActive={rightActive}>&gt;</Control></td>
+          </tr>
+          <tr>
+            <td />
+            <td><Control onClick={() => moveDown(1)} isActive={downActive}>🡇</Control></td>
+            <td/>
           </tr>
         </tbody>
       </table>

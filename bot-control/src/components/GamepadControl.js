@@ -99,7 +99,7 @@ export default ({ moveUp, moveDown, moveLeft, moveRight, setHasGamepad, stop }) 
           size={100}
           baseColor="gray"
           stickColor="lightgray"
-          move={({ x, y }) => {
+          move={({ x, y }) => { console.log(x, y);
             setXAxis(axisValueToSpeed(x / 50));
             setYAxis(axisValueToSpeed(y / 50));
           }}

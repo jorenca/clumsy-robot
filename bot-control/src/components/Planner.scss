@@ -1,6 +1,5 @@
 .planning-container {
   border: 1px solid gray;
-  margin-top: 50px;
 
   button.planning-toggle {
     height: 50px;
@@ -31,7 +30,7 @@
       &.active {
         background-color: green;
       }
-      
+
       border: 1px solid gray;
       margin: 3px;
     }
