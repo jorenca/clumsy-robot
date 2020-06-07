@@ -106,7 +106,6 @@ export default ({ moveUp, moveDown, moveLeft, moveRight, setHasGamepad, stop }) 
           stop={() => {
             setXAxis(0);
             setYAxis(0);
-            stop();
           }} />
       </div>
 
