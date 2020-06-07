@@ -96,7 +96,7 @@ export default ({ moveUp, moveDown, moveLeft, moveRight, setHasGamepad, stop }) 
     <div>
       <div className="virt-joystick-container">
         <Joystick
-          size={100}
+          size={150}
           baseColor="gray"
           stickColor="lightgray"
           move={({ x, y }) => {
