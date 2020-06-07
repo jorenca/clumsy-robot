@@ -42,14 +42,13 @@ export default ({ moveUp, moveDown, moveLeft, moveRight, setHasGamepad, stop }) 
   };
 
   const onAxisChange = (axis, value) => {
-    const requestedSpeed = axisValueToSpeed(value);
     const applyAxisUpdate = {
       LeftStickY: setYAxis,
       LeftStickX: setXAxis,
       RightStickY: setYAxis,
       RightStickX: setXAxis,
     }[axis] || _.noop;
-    applyAxisUpdate(requestedSpeed);
+    applyAxisUpdate(value);
   };
 
   const onButtonPressed = (button) => {
@@ -75,22 +74,23 @@ export default ({ moveUp, moveDown, moveLeft, moveRight, setHasGamepad, stop }) 
       return;
     }
 
-    if (Math.abs(yAxisValue) > Math.abs(xAxisValue)) { // move ahead / back
-      const speed = yAxisValue * turboCoeff;
+    if (Math.abs(yAxisValue) > Math.abs(xAxisValue)
+          || math.abs(yAxisValue) > 0.3) { // prefer moving ahead/back than rotating
+      const speed = axisValueToSpeed(yAxisValue) * turboCoeff;
       if (speed > 0) {
         moveUp(revsInPartSec(speed), speed);
       } else {
         moveDown(revsInPartSec(Math.abs(speed)), Math.abs(speed));
       }
     } else { // turn left or right
-      const speed = xAxisValue / 2;
+      const speed = axisValueToSpeed(xAxisValue / 2);
       if (speed < 0) {
         moveLeft(revsInPartSec(Math.abs(speed)), Math.abs(speed));
       } else {
         moveRight(revsInPartSec(speed), speed);
       }
     }
-  }, (1000 / CALLS_PER_SEC) - 20 /* some toleranse */);
+  }, (1000 / CALLS_PER_SEC) - 20 /* some tolerance */);
 
   return (
     <div>
@@ -99,9 +99,9 @@ export default ({ moveUp, moveDown, moveLeft, moveRight, setHasGamepad, stop }) 
           size={100}
           baseColor="gray"
           stickColor="lightgray"
-          move={({ x, y }) => { console.log(x, y);
-            setXAxis(axisValueToSpeed(x / 50));
-            setYAxis(axisValueToSpeed(y / 50));
+          move={({ x, y }) => {
+            setXAxis(x / 50);
+            setYAxis(y / 50);
           }}
           stop={() => {
             setXAxis(0);
