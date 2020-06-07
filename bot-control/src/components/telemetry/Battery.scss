@@ -4,14 +4,19 @@
 
   table {
     table-layout: fixed;
+    width: 100%;
 
     td {
       text-align: left;
 
       &:first-child {
-        width: 10em;
+        width: 7em;
       }
     }
+  }
+
+  .perc-value {
+    text-align: center;
   }
 
   .battery:after {
