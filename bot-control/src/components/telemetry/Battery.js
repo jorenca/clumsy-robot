@@ -19,9 +19,9 @@ const Battery = ({ battery = {} }) => {
         <tbody>
           <tr>
             <td>Battery voltage</td><td>{_.floor(battery.batteryV, 1).toFixed(1)}V</td>
-            <td rowspan="4" width="110px">
+            <td rowSpan="4" width="110px">
               <div>
-                <div className="perc-value">{_.round(percent)}%</div>
+                <div className="perc-value">{_.round(batteryIndicatorLevel)}%</div>
 
                 <div className="battery">
                   <div id="battery-level" className={classNames({
