@@ -3,6 +3,15 @@
   border: 1px solid gray;
   padding: 5px;
 
+  .virt-joystick-container {
+    border: 1px solid gray;
+    display: inline-flex;
+    width: 200px;
+    height: 200px;
+    justify-content: center;
+    align-items: center;
+  }
+
   .speed-slider input {
     width: 90%;
     padding-bottom: 20px;

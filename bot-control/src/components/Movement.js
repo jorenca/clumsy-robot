@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import GamepadControl from './GamepadControl.js';
 import Planner from './Planner';
 import './Movement.scss';
@@ -18,8 +19,8 @@ export default function Movement({ sharedTelemetry }) {
     <div className="movement-container">
       Movement
       <SpeedSlider speed={speed} setSpeed={(e) => setSpeed(e.target.value)} />
-      <Keypad move={move} cstop={cstop} />
 
+      <Keypad move={move} cstop={cstop} />
       <Planner move={move} cTurn={cTurn} sharedTelemetry={sharedTelemetry} />
     </div>
   );

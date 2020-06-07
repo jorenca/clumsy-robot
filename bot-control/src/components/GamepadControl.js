@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import _ from 'lodash';
 import Gamepad from 'react-gamepad';
+import { Joystick } from 'react-joystick-component';
 
 const CALLS_PER_SEC = 3;
 const revsInPartSec = (speed) => speed /* rpm */ / (60 * CALLS_PER_SEC);
@@ -88,13 +89,31 @@ export default ({ moveUp, moveDown, moveLeft, moveRight, setHasGamepad, stop }) 
   }, (1000 / CALLS_PER_SEC) - 20 /* some toleranse */);
 
   return (
-    <Gamepad
-      onAxisChange={onAxisChange}
-      onButtonDown={onButtonPressed}
-      onButtonUp={onButtonUp}
-      onConnect={() => setHasGamepad(true)}
-      onDisconnect={() => setHasGamepad(false)}>
-      <p />
-    </Gamepad>
+    <div>
+      <div className="virt-joystick-container">
+        <Joystick
+          size={100}
+          baseColor="gray"
+          stickColor="lightgray"
+          move={({ x, y }) => {
+            setXAxis(x / 50);
+            setYAxis(y / 50);
+          }}
+          stop={() => {
+            setXAxis(0);
+            setYAxis(0);
+            stop();
+          }} />
+      </div>
+
+      <Gamepad
+        onAxisChange={onAxisChange}
+        onButtonDown={onButtonPressed}
+        onButtonUp={onButtonUp}
+        onConnect={() => setHasGamepad(true)}
+        onDisconnect={() => setHasGamepad(false)}>
+        <p />
+      </Gamepad>
+    </div>
   );
 }
