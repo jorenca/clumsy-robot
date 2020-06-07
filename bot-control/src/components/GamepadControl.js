@@ -100,8 +100,8 @@ export default ({ moveUp, moveDown, moveLeft, moveRight, setHasGamepad, stop }) 
           baseColor="gray"
           stickColor="lightgray"
           move={({ x, y }) => {
-            setXAxis(x / 50);
-            setYAxis(y / 50);
+            setXAxis(x / 75);
+            setYAxis(y / 75);
           }}
           stop={() => {
             setXAxis(0);
