@@ -75,7 +75,7 @@ export default ({ moveUp, moveDown, moveLeft, moveRight, setHasGamepad, stop }) 
     }
 
     if (Math.abs(yAxisValue) > Math.abs(xAxisValue)
-          || math.abs(yAxisValue) > 0.3) { // prefer moving ahead/back than rotating
+          || Math.abs(yAxisValue) > 0.3) { // prefer moving ahead/back than rotating
       const speed = axisValueToSpeed(yAxisValue) * turboCoeff;
       if (speed > 0) {
         moveUp(revsInPartSec(speed), speed);
