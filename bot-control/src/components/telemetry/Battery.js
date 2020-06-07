@@ -11,7 +11,7 @@ const classNames = (map) => _(map)
 const Battery = ({ battery = {} }) => {
   const percent = _.floor(((battery.batteryV / 3 - 3.3) / 0.9 ) * 100);
   const [batteryIndicatorLevel, setIndicatorLevel] = useState(100);
-  setIndicatorLevel(_.min(batteryIndicatorLevel, percent));
+  if (batteryIndicatorLevel > percent) setIndicatorLevel(percent);
 
   return (
     <div className="battery-indicator">
