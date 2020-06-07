@@ -14,7 +14,8 @@ const telemetrySSE = new SSE();
 
 let motorBoard = {};
 
-let lastProximityValue = 0;
+let lastProximityDist = 0;
+const shouldPreventMovesAhead = (dist) => dist < 10;
 ProximityInput.create({
   readInterval: 200,
   callback: proximity => {
@@ -22,14 +23,14 @@ ProximityInput.create({
     const dist = (0.237 * proximity - 0.39).toPrecision(3);
 
     // Emergency stop to avoid hitting a wall
-    if (dist < 10
-      && lastProximityValue > (proximity + 1) // only if we are moving ahead
+    if (shouldPreventMovesAhead(dist)
+      && lastProximityDist > (dist + 0.1) // only if we are moving ahead
       && motorBoard.cstop
     ) {
       motorBoard.cstop();
     }
+    lastProximityDist = dist;
 
-    lastProximityValue = proximity;
     telemetrySSE.send({ proximity });
   }
 });
@@ -73,6 +74,7 @@ StatusLed.init()
 .then(async () => {
   Server.init({
     motorBoard,
+    shouldPreventMovesAhead: () => shouldPreventMovesAhead(lastProximityDist),
     telemetrySSE,
     onConnect: _.throttle(() => StatusLed.singleFlash(0, 0, 1), 300)
   });

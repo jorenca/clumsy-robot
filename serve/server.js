@@ -7,7 +7,7 @@ const webPort = 3000;
 const webApp = express();
 
 module.exports = {
-  init: ({ motorBoard, telemetrySSE, onConnect }) => {
+  init: ({ motorBoard, telemetrySSE, onConnect, shouldPreventMovesAhead }) => {
     webApp.use(express.static(path.join(__dirname, '../bot-control/build')));
     webApp.get('/telemetry', (...args) => {
       onConnect();
@@ -16,6 +16,13 @@ module.exports = {
 
     webApp.get('/move/:xr/:xrpm/:yr/:yrpm', (req, res) => {
       onConnect();
+      if (shouldPreventMovesAhead()
+        && req.params.xr > 0
+        && req.params.yr > 0) {
+        // don't crash into the wall ahead
+        res.send({});
+        return;
+      }
       motorBoard.doMove(req.params);
       res.send(req.params);
     });
