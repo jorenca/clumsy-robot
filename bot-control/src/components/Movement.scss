@@ -2,6 +2,7 @@
   width: 300px;
   border: 1px solid gray;
   padding: 5px;
+  user-select: none; // no accidental selecting text and stuff
 
   .virt-joystick-container {
     touch-action: none;
