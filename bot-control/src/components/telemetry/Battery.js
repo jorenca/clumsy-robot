@@ -9,7 +9,7 @@ const classNames = (map) => _(map)
   .join(' ')
 
 const Battery = ({ battery = {} }) => {
-  const percent = _.floor(((battery.batteryV / 3 - 3.3) / 0.9 ) * 100);
+  const percent = _.floor(((battery.batteryV / 3 - 3.3) / 0.8 ) * 100);
   const [batteryIndicatorLevel, setIndicatorLevel] = useState(100);
   if (batteryIndicatorLevel > percent) setIndicatorLevel(percent);
 
