@@ -1,12 +1,25 @@
 .App {
   text-align: center;
   display: inline-flex;
+  flex-direction: column;
 }
+
 
 .side-panel {
   background-color: rgba(255, 255, 255, 0.2);
+}
 
-  position: absolute;
-  top: 0;
-  right: 0;
+@media only screen and (min-width: 768px) {
+  .side-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  .feed-container img {
+    position: absolute;
+    position: absolute;
+    z-index: -99;
+    top: 0;
+  }
 }
