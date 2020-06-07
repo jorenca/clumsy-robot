@@ -33,12 +33,16 @@ export default ({ moveUp, moveDown, moveLeft, moveRight, setHasGamepad, stop }) 
   const [yAxisValue, setYAxis] = useState(0);
   const [turboCoeff, setTurboCoeff] = useState(1);
 
-  const onAxisChange = (axis, value) => {
-    let requestedSpeed = value * MAX_SPEED;
-    if (Math.abs(requestedSpeed) < MIN_SPEED) {
-      requestedSpeed = 0;
-    }
+  const axisValueToSpeed = value /* 0-1 */ => {
+      let requestedSpeed = value * MAX_SPEED;
+      if (Math.abs(requestedSpeed) < MIN_SPEED) {
+        return 0;
+      }
+      return requestedSpeed;
+  };
 
+  const onAxisChange = (axis, value) => {
+    const requestedSpeed = axisValueToSpeed(value);
     const applyAxisUpdate = {
       LeftStickY: setYAxis,
       LeftStickX: setXAxis,
@@ -96,8 +100,8 @@ export default ({ moveUp, moveDown, moveLeft, moveRight, setHasGamepad, stop }) 
           baseColor="gray"
           stickColor="lightgray"
           move={({ x, y }) => {
-            setXAxis(x / 50);
-            setYAxis(y / 50);
+            setXAxis(axisValueToSpeed(x / 50));
+            setYAxis(axisValueToSpeed(y / 50));
           }}
           stop={() => {
             setXAxis(0);
