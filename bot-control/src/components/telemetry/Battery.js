@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import _ from 'lodash';
 import './Battery.scss';
 
@@ -10,6 +10,8 @@ const classNames = (map) => _(map)
 
 const Battery = ({ battery = {} }) => {
   const percent = _.floor(((battery.batteryV / 3 - 3.3) / 0.9 ) * 100);
+  const [batteryIndicatorLevel, setIndicatorLevel] = useState(100);
+  setIndicatorLevel(_.min(batteryIndicatorLevel, percent));
 
   return (
     <div className="battery-indicator">
@@ -23,10 +25,10 @@ const Battery = ({ battery = {} }) => {
 
                 <div className="battery">
                   <div id="battery-level" className={classNames({
-                    high: percent > 50,
-                    medium: percent <=50 && percent > 20,
-                    low: percent <= 20
-                  })} style={{ width: percent }}></div>
+                    high: batteryIndicatorLevel > 50,
+                    medium: batteryIndicatorLevel <=50 && batteryIndicatorLevel > 20,
+                    low: batteryIndicatorLevel <= 20
+                  })} style={{ width: batteryIndicatorLevel }}></div>
                 </div>
               </div>
             </td>
