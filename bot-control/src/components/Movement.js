@@ -55,6 +55,7 @@ const Keypad = ({ move, cstop }) => {
   return (
     <div className="keypad">
       <GamepadControl
+      baseMove={move}
         moveUp={moveUp}
         moveDown={moveDown}
         moveLeft={moveLeft}

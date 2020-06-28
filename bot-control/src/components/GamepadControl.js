@@ -4,7 +4,7 @@ import Gamepad from 'react-gamepad';
 import { Joystick } from 'react-joystick-component';
 
 const CALLS_PER_SEC = 2;
-const mmsInPartSec = (feedRate) => feedRate / (CALLS_PER_SEC  * 60);
+const mmsInPartSec = (feedRate) => (feedRate / (CALLS_PER_SEC  * 60)) * 0.9 /* magic to get the timing right */;
 
 function useInterval(callback, delay) {
   const savedCallback = useRef();
@@ -27,8 +27,8 @@ function useInterval(callback, delay) {
 }
 
 const MIN_SPEED = 130;
-const MAX_SPEED = 600;
-export default ({ moveUp, moveDown, moveLeft, moveRight, setHasGamepad, stop }) => {
+const MAX_SPEED = 450;
+export default ({ baseMove, moveUp, moveDown, moveLeft, moveRight, setHasGamepad, stop }) => {
   const [xAxisValue, setXAxis] = useState(0);
   const [yAxisValue, setYAxis] = useState(0);
   const [turboCoeff, setTurboCoeff] = useState(1);
@@ -74,22 +74,19 @@ export default ({ moveUp, moveDown, moveLeft, moveRight, setHasGamepad, stop }) 
       return;
     }
 
-    if (Math.abs(yAxisValue) > Math.abs(xAxisValue)
-          || Math.abs(yAxisValue) > 0.3) { // prefer moving ahead/back than rotating
-      const speed = axisValueToSpeed(yAxisValue) * turboCoeff;
-      if (speed > 0) {
-        moveUp(mmsInPartSec(speed), speed);
-      } else {
-        moveDown(mmsInPartSec(Math.abs(speed)), Math.abs(speed));
-      }
-    } else { // turn left or right
-      const speed = axisValueToSpeed(xAxisValue / 2);
-      if (speed < 0) {
-        moveLeft(mmsInPartSec(Math.abs(speed)), Math.abs(speed));
-      } else {
-        moveRight(mmsInPartSec(speed), speed);
-      }
+    const speed = axisValueToSpeed(yAxisValue);
+    let left = mmsInPartSec(speed);
+    let right = mmsInPartSec(speed);
+
+    if (xAxisValue > 0) {
+      right -= Math.abs(xAxisValue) * right;
+    } else {
+      left -= Math.abs(xAxisValue) * left;
     }
+
+    if (left === 0 && right === 0) return;
+
+    baseMove(left, right, Math.abs(speed));
   }, (1000 / CALLS_PER_SEC));
 
   return (
