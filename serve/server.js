@@ -14,22 +14,22 @@ module.exports = {
       return telemetrySSE.init(...args);
     });
 
-    webApp.get('/move/:xr/:xrpm/:yr/:yrpm', (req, res) => {
+    webApp.get('/move/:x/:y/:feed', (req, res) => {
       onConnect();
       if (shouldPreventMovesAhead()
-        && req.params.xr > 0
-        && req.params.yr > 0) {
+        && req.params.x > 0
+        && req.params.y > 0) {
         // don't crash into the wall ahead
         res.send({});
         return;
       }
-      motorBoard.doMove(req.params);
+      motorBoard.rawMoveXY(req.params);
       res.send(req.params);
     });
 
     webApp.get('/cstop', (req, res) => {
       onConnect();
-      motorBoard.sendRaw('CSTOP;');
+      motorBoard.cstop();
       res.send(req.params);
     });
 
@@ -40,6 +40,7 @@ module.exports = {
     });
 
     webApp.get('/sing', (req, res) => {
+      // TODO Fix or remove, won't work after grbl motor board is used
       let time = 0;
       superMarioThemeSong.forEach(note => {
         const startAfter = time;

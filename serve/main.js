@@ -52,7 +52,7 @@ StatusLed.init()
     telemetrySSE.send(TelemetryInput.recalcWithNewDataLine(line));
   });
 })
-.then(IrDetectionModule.connect)
+//.then(IrDetectionModule.connect) FIXME GEORGI turn back the IR detection module when clash with motor board is resolved
 .then(conn => {
   if (!conn) return;
 

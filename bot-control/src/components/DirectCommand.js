@@ -43,15 +43,9 @@ class CommandInputModal extends React.Component {
         <button onClick={() => onSend(cmd)}>Send</button>
 
         <pre>
-          M leftRotations leftRPM rightRotations rightRPM<br />
-          D[L|R] timeMs stepFrequency direction<br/>
-          C angle<br />
-          CSTOP<br />
-          <br />
-          <br />
-          CMD1 ;<br />
-          M_CMD1:M_CMD2:M_CMD3:...;
+          X20 Y20 - move
         </pre>
+        <a href="http://linuxcnc.org/docs/html/gcode.html">Grbl GCode commands</a>
 
         {last && <div className="last-sent-container">
           <pre>

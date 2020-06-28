@@ -6,11 +6,11 @@ import './Movement.scss';
 import gamepadIcon from './gamepad_icon.png';
 
 export default function Movement({ sharedTelemetry }) {
-  const [speed, setSpeed] = useState('90');
+  const [speed, setSpeed] = useState('150');
 
   const move = (left, right, overrideSpeed) => {
     const speedToUse = overrideSpeed || speed;
-    return fetch(`/move/${left}/${speedToUse}/${right}/${speedToUse}`);
+    return fetch(`/move/${left}/${right}/${speedToUse}`);
   };
   const cstop = () => fetch('/cstop');
   const cTurn = (angle) => fetch(`/motor_cmd/C ${angle} ;`);
@@ -30,7 +30,7 @@ export default function Movement({ sharedTelemetry }) {
 
 const SpeedSlider = ({ speed, setSpeed }) =>
 <div className="speed-slider">
-  <input type="range" min="10" max="99" value={speed} onChange={setSpeed} />
+  <input type="range" min="120" max="600" value={speed} onChange={setSpeed} />
 </div>;
 
 const Keypad = ({ move, cstop }) => {
@@ -68,7 +68,7 @@ const Keypad = ({ move, cstop }) => {
           <tr>
             <td />
             <td>
-              <Control onClick={() => moveUp(1)} isActive={upActive}>🡅</Control>
+              <Control onClick={() => moveUp(3)} isActive={upActive}>🡅</Control>
             </td>
             <td>
               <img
@@ -82,17 +82,17 @@ const Keypad = ({ move, cstop }) => {
               </td>
           </tr>
           <tr>
-            <td><Control onClick={() => moveLeft(0.1)} isActive={leftActive}>&lt;</Control></td>
+            <td><Control onClick={() => moveLeft(1)} isActive={leftActive}>&lt;</Control></td>
             <td>
               <Control onClick={() => cstop()} style={{ backgroundColor: 'red' }}>
                 STOP
               </Control>
             </td>
-            <td><Control onClick={() => moveRight(0.1)} isActive={rightActive}>&gt;</Control></td>
+            <td><Control onClick={() => moveRight(1)} isActive={rightActive}>&gt;</Control></td>
           </tr>
           <tr>
             <td />
-            <td><Control onClick={() => moveDown(1)} isActive={downActive}>🡇</Control></td>
+            <td><Control onClick={() => moveDown(3)} isActive={downActive}>🡇</Control></td>
             <td/>
           </tr>
         </tbody>

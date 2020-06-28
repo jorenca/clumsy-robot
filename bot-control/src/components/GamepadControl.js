@@ -3,8 +3,8 @@ import _ from 'lodash';
 import Gamepad from 'react-gamepad';
 import { Joystick } from 'react-joystick-component';
 
-const CALLS_PER_SEC = 3;
-const revsInPartSec = (speed) => speed /* rpm */ / (60 * CALLS_PER_SEC);
+const CALLS_PER_SEC = 2;
+const mmsInPartSec = (feedRate) => feedRate / (CALLS_PER_SEC  * 60);
 
 function useInterval(callback, delay) {
   const savedCallback = useRef();
@@ -26,8 +26,8 @@ function useInterval(callback, delay) {
   }, [delay]);
 }
 
-const MIN_SPEED = 20;
-const MAX_SPEED = 99;
+const MIN_SPEED = 130;
+const MAX_SPEED = 600;
 export default ({ moveUp, moveDown, moveLeft, moveRight, setHasGamepad, stop }) => {
   const [xAxisValue, setXAxis] = useState(0);
   const [yAxisValue, setYAxis] = useState(0);
@@ -78,19 +78,19 @@ export default ({ moveUp, moveDown, moveLeft, moveRight, setHasGamepad, stop }) 
           || Math.abs(yAxisValue) > 0.3) { // prefer moving ahead/back than rotating
       const speed = axisValueToSpeed(yAxisValue) * turboCoeff;
       if (speed > 0) {
-        moveUp(revsInPartSec(speed), speed);
+        moveUp(mmsInPartSec(speed), speed);
       } else {
-        moveDown(revsInPartSec(Math.abs(speed)), Math.abs(speed));
+        moveDown(mmsInPartSec(Math.abs(speed)), Math.abs(speed));
       }
     } else { // turn left or right
       const speed = axisValueToSpeed(xAxisValue / 2);
       if (speed < 0) {
-        moveLeft(revsInPartSec(Math.abs(speed)), Math.abs(speed));
+        moveLeft(mmsInPartSec(Math.abs(speed)), Math.abs(speed));
       } else {
-        moveRight(revsInPartSec(speed), speed);
+        moveRight(mmsInPartSec(speed), speed);
       }
     }
-  }, (1000 / CALLS_PER_SEC) - 20 /* some tolerance */);
+  }, (1000 / CALLS_PER_SEC));
 
   return (
     <div>

@@ -10,8 +10,8 @@ module.exports = {
     const portsList = await SerialPort.list();
     const comDevice = _(portsList)
       .filter({
-        serialNumber: '9900000037944e45002c4011000000450000000097969901',
-        productId: '0204'
+        vendorId: '1a86',
+        productId: '7523'
       }).first();
     if (!comDevice) {
       console.error('[ERROR] Motor board not found. Is it connected?');
@@ -33,28 +33,28 @@ module.exports = {
 
     const sendRaw = (data) => {
       console.log(`[MB]< ${data} (length ${data.length})`);
-      comPort.write(data);
+      comPort.write(data + '\n');
     };
 
-    const doMove = ({ xr, xrpm, yr, yrpm }) =>
-      sendRaw(`M ${xr} ${xrpm} ${yr} ${yrpm} ;`);
+    const rawMoveXY = ({ x, y, feed }) => {
+      // G91 - relative mode
+      sendRaw(`G91 G1 F${Number(feed).toString()} X${(-Number(x)).toPrecision(3)} Y${Number(y).toPrecision(3)}`);
+    };
 
     const doBasicMove = ({ direction, revs, rpm }) => {
-      doMove({
-        xr: revs * (direction === 'left' ? -1 : (direction === 'forward' ? 1 : 0)),
-        yr: revs * (direction === 'right' ? -1 : (direction === 'forward' ? 1 : 0)),
-        xrpm: rpm,
-        yrpm: rpm
+      rawMoveXY({
+        x: revs * 10 * (direction === 'left' ? -1 : (direction === 'forward' ? 1 : 0)),
+        y: revs * 10 * (direction === 'right' ? -1 : (direction === 'forward' ? 1 : 0)),
       });
     };
 
     return {
       addListener: callb => comParser.on('data', callb),
       sendRaw,
-      cstop: () => sendRaw('CSTOP;'),
+      cstop: () => { sendRaw('\x18'); sendRaw('$X'); }, // soft reset + clear alarm
       doBasicMove,
-      doMove,
-      doDirectMove: ({ timeMs, frequency, dir }) => sendRaw(`DR ${timeMs} ${frequency} ${dir} ;`)
+      rawMoveXY,
+      //doDirectMove: ({ timeMs, frequency, dir }) => sendRaw(`DR ${timeMs} ${frequency} ${dir} ;`)
     };
   }
 };
