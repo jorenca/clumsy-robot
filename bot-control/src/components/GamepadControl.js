@@ -26,8 +26,8 @@ function useInterval(callback, delay) {
   }, [delay]);
 }
 
-const MIN_SPEED = 130;
-const MAX_SPEED = 450;
+const MIN_SPEED = 500;
+const MAX_SPEED = 3000;
 export default ({ baseMove, moveUp, moveDown, moveLeft, moveRight, setHasGamepad, stop }) => {
   const [xAxisValue, setXAxis] = useState(0);
   const [yAxisValue, setYAxis] = useState(0);
@@ -78,10 +78,10 @@ export default ({ baseMove, moveUp, moveDown, moveLeft, moveRight, setHasGamepad
     let left = mmsInPartSec(speed);
     let right = mmsInPartSec(speed);
 
-    if (xAxisValue > 0) {
-      right -= Math.abs(xAxisValue) * right;
+    if (xAxisValue > 0 && Math.abs(xAxisValue) > 0.25) {
+      right -= Math.abs(xAxisValue / 2) * right;
     } else {
-      left -= Math.abs(xAxisValue) * left;
+      left -= Math.abs(xAxisValue / 2) * left;
     }
 
     if (left === 0 && right === 0) return;

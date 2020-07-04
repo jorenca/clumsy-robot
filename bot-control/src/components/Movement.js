@@ -6,7 +6,7 @@ import './Movement.scss';
 import gamepadIcon from './gamepad_icon.png';
 
 export default function Movement({ sharedTelemetry }) {
-  const [speed, setSpeed] = useState('150');
+  const [speed, setSpeed] = useState('1000');
 
   const move = (left, right, overrideSpeed) => {
     const speedToUse = overrideSpeed || speed;
@@ -30,7 +30,7 @@ export default function Movement({ sharedTelemetry }) {
 
 const SpeedSlider = ({ speed, setSpeed }) =>
 <div className="speed-slider">
-  <input type="range" min="120" max="600" value={speed} onChange={setSpeed} />
+  <input type="range" min="500" max="4500" value={speed} onChange={setSpeed} />
 </div>;
 
 const Keypad = ({ move, cstop }) => {
@@ -69,7 +69,8 @@ const Keypad = ({ move, cstop }) => {
           <tr>
             <td />
             <td>
-              <Control onClick={() => moveUp(3)} isActive={upActive}>🡅</Control>
+              <Control onClick={() => moveUp(30)} isActive={upActive}>🡅 30cm</Control>
+              <Control onClick={() => moveUp(10)} isActive={upActive}>🡅 10cm</Control>
             </td>
             <td>
               <img
@@ -83,17 +84,23 @@ const Keypad = ({ move, cstop }) => {
               </td>
           </tr>
           <tr>
-            <td><Control onClick={() => moveLeft(1)} isActive={leftActive}>&lt;</Control></td>
+            <td>
+              <Control onClick={() => moveLeft(1)} isActive={leftActive}>&lt; Short</Control>
+              <Control onClick={() => moveLeft(16)} isActive={leftActive}>&lt; 90 Deg</Control>
+            </td>
             <td>
               <Control onClick={() => cstop()} style={{ backgroundColor: 'red' }}>
                 STOP
               </Control>
             </td>
-            <td><Control onClick={() => moveRight(1)} isActive={rightActive}>&gt;</Control></td>
+            <td>
+              <Control onClick={() => moveRight(1)} isActive={rightActive}>Short &gt;</Control>
+              <Control onClick={() => moveRight(16)} isActive={rightActive}>90 Deg &gt;</Control>
+            </td>
           </tr>
           <tr>
             <td />
-            <td><Control onClick={() => moveDown(3)} isActive={downActive}>🡇</Control></td>
+            <td><Control onClick={() => moveDown(30)} isActive={downActive}>🡇 30cm</Control></td>
             <td/>
           </tr>
         </tbody>
@@ -106,7 +113,7 @@ const Control = ({ onClick, children, style, isActive }) =>
 <button
   onClick={onClick}
   style={{
-    width: '50px',
+    width: '80px',
     height: '50px',
     backgroundColor: isActive ? '#2cd027' : '#e5e5e5',
     ...style

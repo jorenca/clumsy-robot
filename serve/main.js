@@ -45,7 +45,6 @@ StatusLed.init()
 .then(MotorBoard.connect)
 .then(async motorBoardConn => {
   motorBoard = motorBoardConn;
-  motorBoard.addListener(_.throttle(line => console.log(`[MB]> ${line}`), 1000));
 
   motorBoard.addListener(line => {
     if (line[0] != 'H') return;
