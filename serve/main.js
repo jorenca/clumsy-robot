@@ -8,11 +8,16 @@ const MotorBoard = require('./motorBoard.js');
 const StatusLed = require('./statusLed.js');
 const IrDetectionModule = require('./irDetectionModule.js');
 
+const LCD = require('./pcdlib/io.js');
+const QRCode = require('qrcode');
+const os = require('os')
+
 const Server = require('./server.js');
 
 const telemetrySSE = new SSE();
 
 let motorBoard = {};
+let lcdDisplay = {};
 
 let lastProximityDist = 0;
 const shouldPreventMovesAhead = (dist) => dist < 10;
@@ -37,7 +42,13 @@ ProximityInput.create({
 
 PowerInput.create({
   readInterval: 200,
-  callback: battery => telemetrySSE.send({ battery })
+  callback: battery => {
+    telemetrySSE.send({ battery });
+
+    if (lcdDisplay.drawString) {
+      lcdDisplay.drawString(54, 8, battery.busV.toPrecision(3) + 'V');
+    }
+  }
 });
 
 StatusLed.init()
@@ -80,5 +91,40 @@ StatusLed.init()
 
   if (!motorBoard.error) await StatusLed.goGreen();
   await Server.listen();
+})
+.then(() => {
+  return LCD({ // physical pins
+    DIN: 38,
+    SCLK: 36,
+    DC: 40,
+    RST: 35,
+    CS: 32
+  }).then(async lcd => {
+    lcdDisplay = lcd;
+
+    const ip = os.networkInterfaces().wlan0[0].address;
+
+    const qrdata = await QRCode.toString(`http://${ip}:3000/`);
+    qrdata.split('\n').map((row, y) => {
+      y -= 1;
+      if (y < 0) return; // skip empty space
+
+      _.forEach(row, (char, x) => {
+        x -= 4; // skip empty space
+        if (x < 0) return;
+
+        lcd.setpixel(2*x, 2*y, char === '▀' || char === '█');
+        lcd.setpixel(2*x + 1, 2*y, char === '▀' || char === '█');
+
+        lcd.setpixel(2*x, 2*y+1, char === '▄' || char === '█');
+        lcd.setpixel(2*x+1, 2*y+1, char === '▄' || char === '█');
+      });
+    });
+
+    lcd.drawString(0, 32, ip + ':3000');
+
+    lcd.drawString(58, 0, 'Bat');
+    setInterval(() => lcdDisplay.flushData(), 5000);
+  }).then(console.log);
 })
 .catch(console.error);
