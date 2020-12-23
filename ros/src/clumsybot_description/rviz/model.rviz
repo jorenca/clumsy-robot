@@ -203,7 +203,7 @@ Visualization Manager:
       Value: true
   Enabled: true
   Global Options:
-    Background Color: 48; 48; 48
+    Background Color: 120; 120; 120
     Fixed Frame: odom
     Frame Rate: 30
   Name: root
