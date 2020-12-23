@@ -3,9 +3,9 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, Command
 from launch_ros.actions import Node
-
+import xacro
 
 def generate_launch_description():
     return LaunchDescription([
@@ -30,13 +30,13 @@ def get_rviz_node():
 
 def get_state_publisher_node():
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
-    urdf_file_name = os.path.join(
+    xacro_file = os.path.join(
         get_package_share_directory('clumsybot_description'),
         'urdf',
-        'clumsybot.urdf')
+        'clumsybot.urdf.xacro')
 
-    print("URDF robot description file :" + urdf_file_name)
-    urdf_contents = open(urdf_file_name).read()
+    print("URDF robot description file :" + xacro_file)
+    urdf_contents = xacro.process_file(xacro_file).toprettyxml(indent='  ')
 
     return Node(
             package='robot_state_publisher',
