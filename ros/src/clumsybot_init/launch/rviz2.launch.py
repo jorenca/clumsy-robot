@@ -7,10 +7,15 @@ from launch.substitutions import LaunchConfiguration, Command
 from launch_ros.actions import Node
 import xacro
 
+import os
+os.environ['LC_NUMERIC'] = "en_US.UTF-8" # Fix for URDF not showing correctly in RViz
+
+
 def generate_launch_description():
     return LaunchDescription([
         get_rviz_node(),
         get_state_publisher_node(),
+        get_state_publisher_gui_node()
     ])
 
 
@@ -28,6 +33,14 @@ def get_rviz_node():
         output='screen')
 
 
+def get_state_publisher_gui_node():
+    return Node(
+        package='joint_state_publisher_gui',
+        executable='joint_state_publisher_gui',
+        name='joint_state_publisher_gui',
+        # condition=launch.conditions.IfCondition(LaunchConfiguration('gui'))
+    )
+
 def get_state_publisher_node():
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
     xacro_file = os.path.join(
@@ -35,8 +48,9 @@ def get_state_publisher_node():
         'urdf',
         'clumsybot.urdf.xacro')
 
-    print("URDF robot description file :" + xacro_file)
     urdf_contents = xacro.process_file(xacro_file).toprettyxml(indent='  ')
+    print("URDF robot description file :" + xacro_file)
+    print(urdf_contents)
 
     return Node(
             package='robot_state_publisher',

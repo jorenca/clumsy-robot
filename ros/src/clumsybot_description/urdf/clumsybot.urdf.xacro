@@ -1,26 +1,37 @@
 <?xml version="1.0" ?>
 <robot name="clumsybot" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+  <xacro:property name="PI" value="3.14159"/>
+
   <xacro:property name="base_len" value="0.145"/>
   <xacro:property name="base_width" value="0.19"/>
   <xacro:property name="base_height" value="0.23"/>
+
   <xacro:property name="hat_protuding" value="0.01"/>
   <xacro:property name="hat_height" value="0.03"/>
+
+  <xacro:property name="wheel_radius" value="0.021"/>
+  <xacro:property name="wheel_width" value="0.007"/>
+  <xacro:property name="wheel_clearance" value="0.005"/>
 
 
   <material name="blue">
     <color rgba="0 0 0.8 1"/>
   </material>
   <material name="metalic">
-    <color rgba="0.9 0.9 0.95 1"/>
+    <color rgba="0.8 0.8 0.9 1"/>
   </material>
+  <material name="wheel_color">
+    <color rgba="0.1 0.1 0.1 1"/>
+  </material>
+
 
   <link name="base_link">
     <visual>
       <geometry>
         <box size="${base_len} ${base_width} ${base_height}"/>
       </geometry>
-      <origin xyz="0 0 ${base_height/2}"/>
+      <origin xyz="0 0 ${base_height/2}" rpy="0 0 0" />
       <material name="metalic"/>
     </visual>
   </link>
@@ -34,9 +45,28 @@
       <material name="blue"/>
     </visual>
   </link>
-  <joint name="base_to_camera" type="fixed">
+  <joint name="base_to_hat" type="fixed">
     <parent link="base_link"/>
     <child link="hat_link"/>
-    <origin xyz="0 0 ${base_height}"/>
+    <origin xyz="0 0 ${base_height}" />
   </joint>
+
+
+  <link name="left_back_wheel">
+    <visual>
+      <geometry>
+        <cylinder length="${wheel_width}" radius="${wheel_radius}"/>
+      </geometry>
+      <material name="wheel_color"/>
+      <origin rpy="${PI/2} 0 0" />
+    </visual>
+  </link>
+  <joint name="left_back_wheel_joint" type="continuous">
+    <axis xyz="0 1 0"/>
+    <parent link="base_link"/>
+    <child link="left_back_wheel"/>
+    <origin xyz="${base_len/2 - wheel_radius} ${base_width/2} ${wheel_radius - wheel_clearance}"/>
+  </joint>
+
+
 </robot>
