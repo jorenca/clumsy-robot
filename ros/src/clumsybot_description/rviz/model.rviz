@@ -201,7 +201,7 @@ Visualization Manager:
       Topic: /odom
       Unreliable: true
       Value: true
-  Enabled: true
+  Enabled: false
   Global Options:
     Background Color: 120; 120; 120
     Fixed Frame: base_link

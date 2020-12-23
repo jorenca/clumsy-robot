@@ -34,6 +34,11 @@
       <origin xyz="0 0 ${base_height/2}" rpy="0 0 0" />
       <material name="metalic"/>
     </visual>
+    <collision>
+      <geometry>
+        <box size="${base_len} ${base_width + 2*hat_protuding} ${base_height + hat_height}"/>
+      </geometry>
+    </collision>
   </link>
 
 
