@@ -13,9 +13,9 @@ os.environ['LC_NUMERIC'] = "en_US.UTF-8" # Fix for URDF not showing correctly in
 
 def generate_launch_description():
     return LaunchDescription([
+        get_state_publisher_gui_node(),
         get_rviz_node(),
         get_state_publisher_node(),
-        get_state_publisher_gui_node()
     ])
 
 
