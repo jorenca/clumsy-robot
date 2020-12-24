@@ -10,15 +10,16 @@ import xacro
 
 import os
 os.environ['LC_NUMERIC'] = "en_US.UTF-8" # Fix for URDF not showing correctly in RViz
+os.environ['LIBGL_ALWAYS_INDIRECT'] = "0" # Fix for Gazebo black screen
 
 
 def generate_launch_description():
     return LaunchDescription(
         start_simulation() +
+        get_state_publisher_node() +
         [
             get_state_publisher_gui_node(),
             get_rviz_node(),
-            get_state_publisher_node(),
     ])
 
 
@@ -55,7 +56,22 @@ def get_state_publisher_node():
     print("URDF robot description file :" + xacro_file)
     print(urdf_contents)
 
-    return Node(
+    urdf_spawner_args = '-x 0 -y 0 -z 0 -R 0 -P 0 -Y 0 -entity vehicle -topic robot_description'
+
+    return [
+        Node(
+            name = 'urdf_spawner',
+            namespace = 'vehicle',
+            package='gazebo_ros',
+            executable='spawn_entity.py',
+            output='screen',
+            parameters=[{
+                    'entity': 'vehicle'
+                }], # not needed?
+            arguments=urdf_spawner_args.split()
+        ),
+
+        Node(
             package='robot_state_publisher',
             executable='robot_state_publisher',
             name='robot_state_publisher',
@@ -64,11 +80,12 @@ def get_state_publisher_node():
                 'use_sim_time': use_sim_time,
                 'robot_description': urdf_contents
             }])
+    ]
 
 
 def start_simulation():
     use_sim_time = LaunchConfiguration('use_sim_time', default='True')
-    world_file_name = 'turtlebot3_houses/waffle.model'
+    world_file_name = 'houses.model'  #'turtlebot3_houses/waffle.model'
     world = os.path.join(get_package_share_directory('clumsybot_init'), 'worlds', world_file_name)
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
 

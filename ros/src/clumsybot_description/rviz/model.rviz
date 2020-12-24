@@ -86,10 +86,6 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        base_footprint:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         base_link:
           Alpha: 1
           Show Axes: false
@@ -100,21 +96,16 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        caster_back_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         imu_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        wheel_left_link:
+        left_front_wheel_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        wheel_right_link:
+        right_front_wheel_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -130,21 +121,17 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        base_footprint:
-          Value: true
         base_link:
           Value: true
         base_scan:
-          Value: true
-        caster_back_link:
           Value: true
         imu_link:
           Value: true
         odom:
           Value: true
-        wheel_left_link:
+        left_front_wheel_link:
           Value: true
-        wheel_right_link:
+        right_front_wheel_link:
           Value: true
       Marker Scale: 1
       Name: TF
@@ -153,18 +140,15 @@ Visualization Manager:
       Show Names: true
       Tree:
         odom:
-          base_footprint:
-            base_link:
-              base_scan:
-                {}
-              caster_back_link:
-                {}
-              imu_link:
-                {}
-              wheel_left_link:
-                {}
-              wheel_right_link:
-                {}
+          base_link:
+            base_scan:
+              {}
+            imu_link:
+              {}
+            left_front_wheel_link:
+              {}
+            right_front_wheel_link:
+              {}
       Update Interval: 0
       Value: true
     - Angle Tolerance: 0.10000000149011612
@@ -201,7 +185,8 @@ Visualization Manager:
       Topic: /odom
       Unreliable: true
       Value: true
-  Enabled: false
+      Enabled: false
+  Enabled: true
   Global Options:
     Background Color: 120; 120; 120
     Fixed Frame: base_link
