@@ -35,7 +35,7 @@
     </collision>
     <inertial>
       <origin xyz="0 0 ${base_height/2}" />
-      <mass value="1"/>
+      <mass value="2"/>
       <inertia
         ixx="1.0" ixy="0.0" ixz="0.0"
         iyy="1.0" iyz="0.0"
@@ -59,8 +59,7 @@
       <material name="blue"/>
     </visual>
     <inertial>
-      <origin xyz="0 0 0" />
-      <mass value="1"/>
+      <mass value="0.5"/>
       <inertia
         ixx="1.0" ixy="0.0" ixz="0.0"
         iyy="1.0" iyz="0.0"
@@ -90,19 +89,18 @@
       <origin rpy="${PI/2} 0 0" />
     </collision>
     <inertial>
-      <origin xyz="0 0 0" />
-      <mass value="0.1"/>
+      <mass value="0.01"/>
       <inertia
-        ixx="1.0" ixy="0.0" ixz="0.0"
-        iyy="1.0" iyz="0.0"
-        izz="1.0"/>
+        ixx="1.0e-5" ixy="0.0" ixz="0.0"
+        iyy="1.0e-5" iyz="0.0"
+        izz="1.0e-5"/>
     </inertial>
   </link>
   <joint name="left_front_wheel_joint" type="continuous">
     <axis xyz="0 1 0"/>
     <parent link="base_link"/>
     <child link="left_front_wheel"/>
-    <origin xyz="${-base_len/2 + wheel_radius} ${base_width/2 + wheel_width} ${wheel_radius - wheel_clearance}"/>
+    <origin xyz="${-base_len/2 + wheel_radius} ${base_width/2} ${wheel_radius - wheel_clearance}"/>
   </joint>
 
   <link name="left_back_wheel">
@@ -120,12 +118,11 @@
       <origin rpy="${PI/2} 0 0" />
     </collision>
     <inertial>
-      <origin xyz="0 0 0" />
-      <mass value="0.1"/>
+      <mass value="0.01"/>
       <inertia
-        ixx="1.0" ixy="0.0" ixz="0.0"
-        iyy="1.0" iyz="0.0"
-        izz="1.0"/>
+        ixx="1.0e-5" ixy="0.0" ixz="0.0"
+        iyy="1.0e-5" iyz="0.0"
+        izz="1.0e-5"/>
     </inertial>
   </link>
   <joint name="left_back_wheel_joint" type="continuous">
@@ -133,7 +130,7 @@
     <axis xyz="0 1 0"/>
     <parent link="base_link"/>
     <child link="left_back_wheel"/>
-    <origin xyz="${base_len/2 - wheel_radius} ${base_width/2 + wheel_width} ${wheel_radius - wheel_clearance}"/>
+    <origin xyz="${base_len/2 - wheel_radius} ${base_width/2} ${wheel_radius - wheel_clearance}"/>
   </joint>
 
 
@@ -152,19 +149,18 @@
       <origin rpy="${PI/2} 0 0" />
     </collision>
     <inertial>
-      <origin xyz="0 0 0" />
-      <mass value="0.1"/>
+      <mass value="0.01"/>
       <inertia
-        ixx="1.0" ixy="0.0" ixz="0.0"
-        iyy="1.0" iyz="0.0"
-        izz="1.0"/>
+        ixx="1.0e-5" ixy="0.0" ixz="0.0"
+        iyy="1.0e-5" iyz="0.0"
+        izz="1.0e-5"/>
     </inertial>
   </link>
   <joint name="right_front_wheel_joint" type="continuous">
     <axis xyz="0 1 0"/>
     <parent link="base_link"/>
     <child link="right_front_wheel"/>
-    <origin xyz="${-base_len/2 + wheel_radius} ${-base_width/2 - wheel_width} ${wheel_radius - wheel_clearance}"/>
+    <origin xyz="${-base_len/2 + wheel_radius} ${-base_width/2} ${wheel_radius - wheel_clearance}"/>
   </joint>
 
   <link name="right_back_wheel">
@@ -172,22 +168,21 @@
       <geometry>
         <cylinder length="${wheel_width}" radius="${wheel_radius}"/>
       </geometry>
-      <collision>
-        <geometry>
-          <cylinder length="${wheel_width}" radius="${wheel_radius}"/>
-        </geometry>
-        <origin rpy="${PI/2} 0 0" />
-      </collision>
-      <material name="wheel_color"/>
       <origin rpy="${PI/2} 0 0" />
+      <material name="wheel_color"/>
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="${wheel_width}" radius="${wheel_radius}"/>
+      </geometry>
+      <origin rpy="${PI/2} 0 0" />
+    </collision>
     <inertial>
-      <origin xyz="0 0 0" />
-      <mass value="0.1"/>
+      <mass value="0.01"/>
       <inertia
-        ixx="1.0" ixy="0.0" ixz="0.0"
-        iyy="1.0" iyz="0.0"
-        izz="1.0"/>
+        ixx="1.0e-5" ixy="0.0" ixz="0.0"
+        iyy="1.0e-5" iyz="0.0"
+        izz="1.0e-5"/>
     </inertial>
   </link>
   <joint name="right_back_wheel_joint" type="continuous">
@@ -195,7 +190,7 @@
     <axis xyz="0 1 0"/>
     <parent link="base_link"/>
     <child link="right_back_wheel"/>
-    <origin xyz="${base_len/2 - wheel_radius} ${-base_width/2 - wheel_width} ${wheel_radius - wheel_clearance}"/>
+    <origin xyz="${base_len/2 - wheel_radius} ${-base_width/2} ${wheel_radius - wheel_clearance}"/>
   </joint>
 
 

@@ -18,36 +18,22 @@
 
   <gazebo>
     <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
-      <always_on>true</always_on>
-      <legacy_mode>false</legacy_mode>
       <update_rate>20</update_rate>
+      <num_wheel_pairs>2</num_wheel_pairs>
       <left_joint>left_front_wheel_joint</left_joint>
+      <left_joint>left_back_wheel_joint</left_joint>
       <right_joint>right_front_wheel_joint</right_joint>
+      <right_joint>right_back_wheel_joint</right_joint>
+      <wheel_separation>${base_width + wheel_width}</wheel_separation>
       <wheel_separation>${base_width + wheel_width}</wheel_separation>
       <wheel_diameter>${wheel_radius * 2}</wheel_diameter>
-      <wheel_acceleration>1.0</wheel_acceleration>
-      <torque>20</torque>
-      <commandTopic>cmd_vel</commandTopic>
-      <odometryTopic>odom</odometryTopic>
-      <odometryFrame>odom</odometryFrame>
+      <wheel_diameter>${wheel_radius * 2}</wheel_diameter>
+      <wheel_acceleration>0.5</wheel_acceleration>
+      <torque>1</torque>
+      <command_topic>cmd_vel</command_topic>
+      <odometry_topic>odom</odometry_topic>
+      <odometry_frame>odom</odometry_frame>
       <robot_base_frame>base_footprint</robot_base_frame>
     </plugin>
   </gazebo>
-
-  <!-- <gazebo>
-    <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
-      <updateRate>20.0</updateRate>
-      <robotNamespace>/</robotNamespace>
-      <leftFrontJoint>left_front_wheel_joint</leftFrontJoint>
-      <rightFrontJoint>right_front_wheel_joint</rightFrontJoint>
-      <leftRearJoint>left_back_wheel_joint</leftRearJoint>
-      <rightRearJoint>right_back_wheel_joint</rightRearJoint>
-      <wheelSeparation>${base_width}</wheelSeparation>
-      <wheelDiameter>${wheel_radius * 2}</wheelDiameter>
-      <robotBaseFrame>base_link</robotBaseFrame>
-      <torque>20</torque>
-      <topicName>cmd_vel</topicName>
-      <broadcastTF>false</broadcastTF>
-    </plugin>
-  </gazebo> -->
 </robot>
