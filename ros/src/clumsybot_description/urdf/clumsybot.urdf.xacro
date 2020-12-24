@@ -28,6 +28,7 @@
       <material name="metalic"/>
     </visual>
     <collision>
+      <origin xyz="0 0 ${(base_height + hat_height)/2}" rpy="0 0 0" />
       <geometry>
         <box size="${base_len} ${base_width + 2*hat_protuding} ${base_height + hat_height}"/>
       </geometry>
@@ -82,6 +83,12 @@
       <material name="wheel_color"/>
       <origin rpy="${PI/2} 0 0" />
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="${wheel_width}" radius="${wheel_radius}"/>
+      </geometry>
+      <origin rpy="${PI/2} 0 0" />
+    </collision>
     <inertial>
       <origin xyz="0 0 0" />
       <mass value="0.1"/>
@@ -95,7 +102,7 @@
     <axis xyz="0 1 0"/>
     <parent link="base_link"/>
     <child link="left_front_wheel"/>
-    <origin xyz="${-base_len/2 + wheel_radius} ${base_width/2} ${wheel_radius - wheel_clearance}"/>
+    <origin xyz="${-base_len/2 + wheel_radius} ${base_width/2 + wheel_width} ${wheel_radius - wheel_clearance}"/>
   </joint>
 
   <link name="left_back_wheel">
@@ -106,6 +113,12 @@
       <material name="wheel_color"/>
       <origin rpy="${PI/2} 0 0" />
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="${wheel_width}" radius="${wheel_radius}"/>
+      </geometry>
+      <origin rpy="${PI/2} 0 0" />
+    </collision>
     <inertial>
       <origin xyz="0 0 0" />
       <mass value="0.1"/>
@@ -120,7 +133,7 @@
     <axis xyz="0 1 0"/>
     <parent link="base_link"/>
     <child link="left_back_wheel"/>
-    <origin xyz="${base_len/2 - wheel_radius} ${base_width/2} ${wheel_radius - wheel_clearance}"/>
+    <origin xyz="${base_len/2 - wheel_radius} ${base_width/2 + wheel_width} ${wheel_radius - wheel_clearance}"/>
   </joint>
 
 
@@ -132,6 +145,12 @@
       <material name="wheel_color"/>
       <origin rpy="${PI/2} 0 0" />
     </visual>
+    <collision>
+      <geometry>
+        <cylinder length="${wheel_width}" radius="${wheel_radius}"/>
+      </geometry>
+      <origin rpy="${PI/2} 0 0" />
+    </collision>
     <inertial>
       <origin xyz="0 0 0" />
       <mass value="0.1"/>
@@ -145,7 +164,7 @@
     <axis xyz="0 1 0"/>
     <parent link="base_link"/>
     <child link="right_front_wheel"/>
-    <origin xyz="${-base_len/2 + wheel_radius} ${-base_width/2} ${wheel_radius - wheel_clearance}"/>
+    <origin xyz="${-base_len/2 + wheel_radius} ${-base_width/2 - wheel_width} ${wheel_radius - wheel_clearance}"/>
   </joint>
 
   <link name="right_back_wheel">
@@ -153,6 +172,12 @@
       <geometry>
         <cylinder length="${wheel_width}" radius="${wheel_radius}"/>
       </geometry>
+      <collision>
+        <geometry>
+          <cylinder length="${wheel_width}" radius="${wheel_radius}"/>
+        </geometry>
+        <origin rpy="${PI/2} 0 0" />
+      </collision>
       <material name="wheel_color"/>
       <origin rpy="${PI/2} 0 0" />
     </visual>
@@ -170,7 +195,30 @@
     <axis xyz="0 1 0"/>
     <parent link="base_link"/>
     <child link="right_back_wheel"/>
-    <origin xyz="${base_len/2 - wheel_radius} ${-base_width/2} ${wheel_radius - wheel_clearance}"/>
+    <origin xyz="${base_len/2 - wheel_radius} ${-base_width/2 - wheel_width} ${wheel_radius - wheel_clearance}"/>
   </joint>
+
+
+  <!-- <transmission name="left_wheel_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="left_front_wheel_joint">
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="left_wheel_actuator">
+      <mechanicalReduction>7</mechanicalReduction>
+      <hardwareInterface>VelocityJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+
+  <transmission name="right_wheel_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="right_front_wheel_joint">
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="right_wheel_actuator">
+      <mechanicalReduction>7</mechanicalReduction>
+      <hardwareInterface>VelocityJointInterface</hardwareInterface>
+    </actuator>
+  </transmission> -->
 
 </robot>

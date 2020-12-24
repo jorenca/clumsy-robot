@@ -45,6 +45,6 @@ def start_simulation():
             executable='spawn_entity.py',
             output='screen',
             parameters=[{'use_sim_time': True}],
-            arguments='-x 0 -y -2 -z 0 -R 0 -P 0 -Y 0 -unpause -entity clumsybot -topic robot_description'.split()
+            arguments='-x 0 -y 0.2 -z 0 -R 0 -P 0 -Y 0 -unpause -entity clumsybot -topic robot_description'.split()
         ),
     ]
