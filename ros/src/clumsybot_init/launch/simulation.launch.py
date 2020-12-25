@@ -17,7 +17,7 @@ def generate_launch_description():
 
 def start_simulation():
     use_sim_time = LaunchConfiguration('use_sim_time', default='True')
-    world_file_name = 'houses.model'  #'turtlebot3_houses/waffle.model'
+    world_file_name = 'houses.model'
     world = os.path.join(get_package_share_directory('clumsybot_init'), 'worlds', world_file_name)
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
 
@@ -27,7 +27,7 @@ def start_simulation():
             PythonLaunchDescriptionSource(
                 os.path.join(pkg_gazebo_ros, 'launch', 'gzserver.launch.py')
             ),
-            launch_arguments={'world': world}.items(),
+            launch_arguments={'world': world, 'verbose': 'true'}.items(),
         ),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(

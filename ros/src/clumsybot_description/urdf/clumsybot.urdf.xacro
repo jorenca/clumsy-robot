@@ -37,9 +37,9 @@
       <origin xyz="0 0 ${base_height/2}" />
       <mass value="2"/>
       <inertia
-        ixx="1.0" ixy="0.0" ixz="0.0"
-        iyy="1.0" iyz="0.0"
-        izz="1.0"/>
+        ixx="1.0e-3" ixy="0.0" ixz="0.0"
+        iyy="1.0e-3" iyz="0.0"
+        izz="1.0e-3"/>
     </inertial>
   </link>
 
@@ -61,9 +61,9 @@
     <inertial>
       <mass value="0.5"/>
       <inertia
-        ixx="1.0" ixy="0.0" ixz="0.0"
-        iyy="1.0" iyz="0.0"
-        izz="1.0"/>
+        ixx="0" ixy="0.0" ixz="0.0"
+        iyy="0" iyz="0.0"
+        izz="0"/>
     </inertial>
   </link>
   <joint name="base_to_hat" type="fixed">
@@ -194,25 +194,23 @@
   </joint>
 
 
-  <!-- <link name="kinect_link">
-    <visual>
-      <geometry>
-        <box size="0.02 0.18 0.02"/>
-      </geometry>
-    </visual>
-    <inertial>
-      <mass value="0.5"/>
-      <inertia
-        ixx="1.0" ixy="0.0" ixz="0.0"
-        iyy="1.0" iyz="0.0"
-        izz="1.0"/>
-    </inertial>
-  </link>
+  <xacro:include filename="sensor/kinect/kinect.urdf.xacro"/>
+
+  <xacro:kinect_cam name="kinect"/>
+
   <joint name="kinect_to_hat_joint" type="fixed">
     <parent link="hat_link"/>
     <child link="kinect_link"/>
     <origin xyz="0 0 ${hat_height+0.03}" />
-  </joint> -->
+  </joint>
+
+  <link name="kinect_rgb_optical_frame"/>
+  <joint name="rgb_kinect_joint" type="fixed">
+    <origin rpy="${PI/2} ${PI} ${PI/2}"/>
+    <parent link="kinect_link"/>
+    <child link="kinect_rgb_optical_frame"/>
+  </joint>
+
 
 
   <!-- <transmission name="left_wheel_transmission">
