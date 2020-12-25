@@ -194,6 +194,27 @@
   </joint>
 
 
+  <!-- <link name="kinect_link">
+    <visual>
+      <geometry>
+        <box size="0.02 0.18 0.02"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
+    </inertial>
+  </link>
+  <joint name="kinect_to_hat_joint" type="fixed">
+    <parent link="hat_link"/>
+    <child link="kinect_link"/>
+    <origin xyz="0 0 ${hat_height+0.03}" />
+  </joint> -->
+
+
   <!-- <transmission name="left_wheel_transmission">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="left_front_wheel_joint">

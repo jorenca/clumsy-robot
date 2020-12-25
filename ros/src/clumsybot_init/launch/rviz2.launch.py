@@ -10,12 +10,18 @@ import xacro
 import os
 os.environ['LC_NUMERIC'] = "en_US.UTF-8" # Fix for URDF not showing correctly in RViz
 
+USE_SIM_TIME = LaunchConfiguration('use_sim_time', default='true')
 
 def generate_launch_description():
     return LaunchDescription(
         [
+            # DeclareLaunchArgument(
+            #     'use_sim_time',
+            #     default_value='true',
+            #     description='Use simulation (Gazebo) clock if true'),
+
             get_state_publisher_node(),
-            get_joint_state_publisher_gui_node(),
+            # get_joint_state_publisher_gui_node(), # not needed since gazebo diff drive takes care of it
             get_rviz_node(),
         ]
     )
@@ -32,6 +38,7 @@ def get_rviz_node():
         executable='rviz2',
         name='rviz2',
         arguments=['-d', rviz_config_dir],
+        # parameters=[{'use_sim_time': USE_SIM_TIME}],
         output='screen')
 
 
@@ -44,7 +51,6 @@ def get_joint_state_publisher_gui_node():
     )
 
 def get_state_publisher_node():
-    use_sim_time = LaunchConfiguration('use_sim_time', default='true')
     xacro_file = os.path.join(
         get_package_share_directory('clumsybot_description'),
         'urdf',
@@ -60,6 +66,6 @@ def get_state_publisher_node():
             name='robot_state_publisher',
             output='screen',
             parameters=[{
-                'use_sim_time': use_sim_time,
+                'use_sim_time': USE_SIM_TIME,
                 'robot_description': urdf_contents
             }])
