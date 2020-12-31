@@ -8,7 +8,7 @@
     "react-dom": "^16.13.1",
     "react-gamepad": "^1.0.3",
     "react-joystick-component": "^1.4.0",
-    "react-scripts": "^3.4.1"
+    "react-scripts": "^4.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
