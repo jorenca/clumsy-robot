@@ -7,7 +7,7 @@ from launch_ros.actions import Node
 
 
 import os
-os.environ['LIBGL_ALWAYS_INDIRECT'] = "0" # Fix for Gazebo black screen
+os.environ['LIBGL_ALWAYS_INDIRECT'] = "0" # Fix for Gazebo black screen??
 
 def generate_launch_description():
     return LaunchDescription(

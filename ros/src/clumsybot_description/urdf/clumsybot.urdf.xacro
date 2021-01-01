@@ -193,21 +193,21 @@
     <origin xyz="${base_len/2 - wheel_radius} ${-base_width/2} ${wheel_radius - wheel_clearance}"/>
   </joint>
 
-  <!-- <xacro:include filename="sensor/kinect/kinect.urdf.xacro"/>
-  <xacro:kinect_cam name="kinect"/>
+  <xacro:include filename="sensor/kinect/kinect.urdf.xacro"/>
+  <xacro:kinect_cam name="camera"/>
 
   <joint name="kinect_to_hat_joint" type="fixed">
     <parent link="hat_link"/>
-    <child link="kinect_link"/>
+    <child link="camera_link"/>
     <origin xyz="0 0 ${hat_height+0.03}" />
   </joint>
 
   <link name="kinect_rgb_optical_frame"/>
   <joint name="rgb_kinect_joint" type="fixed">
     <origin rpy="${PI/2} ${PI} ${PI/2}"/>
-    <parent link="kinect_link"/>
+    <parent link="camera_link"/>
     <child link="kinect_rgb_optical_frame"/>
-  </joint> -->
+  </joint>
 
   <xacro:include filename="sensor/proximity_sensor.urdf.xacro"/>
   <xacro:proximity_sensor group="proximity" range_max="2.5" name="proxsense" xyz="0.08 0 0" rpy="0 0 0"/>

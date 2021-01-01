@@ -14,6 +14,7 @@ os.environ['LC_NUMERIC'] = "en_US.UTF-8" # Fix for URDF not showing correctly in
 USE_SIM_TIME = LaunchConfiguration('use_sim_time', default='true')
 
 def generate_launch_description():
+    nav2_launch_file_dir = os.path.join(get_package_share_directory('nav2_bringup'), 'launch')
 
     return LaunchDescription(
         [
@@ -21,9 +22,36 @@ def generate_launch_description():
             #     'use_sim_time',
             #     default_value='true',
             #     description='Use simulation (Gazebo) clock if true'),
+
             get_state_publisher_node(),
-            get_joint_state_publisher_gui_node(), # not needed since gazebo diff drive takes care of it
-            get_rviz_node(),
+
+            Node(
+                package='cartographer_ros',
+                executable='cartographer_node',
+                name='cartographer_node',
+                output='screen',
+                parameters=[{'use_sim_time': USE_SIM_TIME}],
+                # arguments=['-configuration_directory', cartographer_config_dir,
+                           # '-configuration_basename', configuration_basename]
+           ),
+
+            Node(
+                package='cartographer_ros',
+                executable='occupancy_grid_node',
+                name='occupancy_grid_node',
+                output='screen',
+                parameters=[{'use_sim_time': USE_SIM_TIME}],
+                # arguments=['-resolution', resolution, '-publish_period_sec', publish_period_sec]
+            ),
+
+            # IncludeLaunchDescription(
+            #     PythonLaunchDescriptionSource([nav2_launch_file_dir, '/nav2_bringup_launch.py']),
+            #     launch_arguments={
+            #         'map': './mapout.yaml',
+            #         'use_sim_time': USE_SIM_TIME,
+            #         # 'params': param_dir
+            #         }.items(),
+            # ),
         ]
     )
 
@@ -47,27 +75,3 @@ def get_state_publisher_node():
                 'use_sim_time': USE_SIM_TIME,
                 'robot_description': urdf_contents
             }])
-
-
-def get_rviz_node():
-    rviz_config_dir = os.path.join(
-        get_package_share_directory('clumsybot_description'),
-        'rviz',
-        'model.rviz')
-
-    return Node(
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2',
-        arguments=['-d', rviz_config_dir],
-        # parameters=[{'use_sim_time': USE_SIM_TIME}],
-        output='screen')
-
-
-def get_joint_state_publisher_gui_node():
-    return Node(
-        package='joint_state_publisher_gui',
-        executable='joint_state_publisher_gui',
-        name='joint_state_publisher_gui',
-        # condition=launch.conditions.IfCondition(LaunchConfiguration('gui'))
-    )
