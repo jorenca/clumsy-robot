@@ -17,10 +17,10 @@
     <color rgba="0.2 0.2 0.2 1.0"/>
   </material>
   <material name="orange">
-    <color rgba="1.0 0.4235294117647059 0.0392156862745098 1.0"/>
+    <color rgba="1.0 0.423529411765 0.0392156862745 1.0"/>
   </material>
   <material name="brown">
-    <color rgba="0.8705882352941177 0.8117647058823529 0.7647058823529411 1.0"/>
+    <color rgba="0.870588235294 0.811764705882 0.764705882353 1.0"/>
   </material>
   <material name="red">
     <color rgba="0.8 0.0 0.0 1.0"/>
@@ -134,7 +134,7 @@
     <axis xyz="0 1 0"/>
     <parent link="base_link"/>
     <child link="left_front_wheel"/>
-    <origin xyz="-0.05149999999999999 0.095 0.016"/>
+    <origin xyz="-0.0515 0.095 0.016"/>
   </joint>
   <link name="left_back_wheel">
     <visual>
@@ -160,7 +160,7 @@
     <axis xyz="0 1 0"/>
     <parent link="base_link"/>
     <child link="left_back_wheel"/>
-    <origin xyz="0.05149999999999999 0.095 0.016"/>
+    <origin xyz="0.0515 0.095 0.016"/>
   </joint>
   <link name="right_front_wheel">
     <visual>
@@ -185,7 +185,7 @@
     <axis xyz="0 1 0"/>
     <parent link="base_link"/>
     <child link="right_front_wheel"/>
-    <origin xyz="-0.05149999999999999 -0.095 0.016"/>
+    <origin xyz="-0.0515 -0.095 0.016"/>
   </joint>
   <link name="right_back_wheel">
     <visual>
@@ -211,7 +211,7 @@
     <axis xyz="0 1 0"/>
     <parent link="base_link"/>
     <child link="right_back_wheel"/>
-    <origin xyz="0.05149999999999999 -0.095 0.016"/>
+    <origin xyz="0.0515 -0.095 0.016"/>
   </joint>
   <link name="camera_link">
     <visual>
@@ -385,3 +385,4 @@
     </actuator>
   </transmission> -->
 </robot>
+

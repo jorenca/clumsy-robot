@@ -1,6 +1,7 @@
 import os
 import xacro
 
+os.environ['LC_NUMERIC'] = "en_US.UTF-8" # Fix for URDF not showing correctly in RViz
 
 xacro_file = os.path.join(
     'src', 'clumsybot_description',
