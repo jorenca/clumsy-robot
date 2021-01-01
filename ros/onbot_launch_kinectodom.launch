@@ -1,9 +1,11 @@
 <launch>
   <param name="robot_description" textfile="robotmodel.xml"/>
-  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" >
-     <!-- <remap from="robot_description" to="my_robot_description" />
-     <remap from="joint_states" to="different_joint_states" /> -->
-   </node>
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" />
+
+
+  <include file="$(find freenect_launch)/launch/freenect.launch">
+    <arg name="depth_registration" value="true" />
+  </include>
 
 
   <group ns="rtabmap">
