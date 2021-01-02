@@ -6,18 +6,6 @@
   <include file="$(find freenect_launch)/launch/freenect.launch">
     <arg name="depth_registration" value="true" />
   </include>
-
-  <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/rgbd_sync" output="screen">
-    <remap from="rgb/image"        to="/camera/rgb/image_rect_color"/>
-    <remap from="depth/image"      to="/camera/depth_registered/image_raw"/>
-    <remap from="rgb/camera_info"  to="/camera/rgb/camera_info"/>
-    <remap from="rgbd_image"       to="rgbd_image"/> <!-- output -->
-
-    <!-- Should be true for not synchronized camera topics
-         (e.g., false for kinectv2, zed, realsense, true for xtion, kinect360)-->
-    <param name="approx_sync"       value="true"/>
-    <param name="compressed_rate"  type="double" value="5"/>
-  </node>
 </launch>
 
 <!-- Note that we set `approx_sync` to false for `rtabmap` node to make sure it uses exactly the `odom` computed with the same `rgbd_image` topic. -->
