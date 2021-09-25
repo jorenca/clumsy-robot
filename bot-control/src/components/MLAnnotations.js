@@ -8,8 +8,8 @@ const getCameraFeedElement = () => document.getElementById('camera-feed');
 
 export default function MLAnnotations({ sharedTelemetry }) {
   const [predictions, setPredictions] = useState([]);
-
   const detectionTimeoutRef = useRef();
+
   const predict = async () => {
     if (!model) {
       model = await window.cocoSsd.load();
@@ -20,20 +20,24 @@ export default function MLAnnotations({ sharedTelemetry }) {
     detectionTimeoutRef.current = setTimeout(predict, ANNOTATION_INTERVAL_MS);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     detectionTimeoutRef.current = setTimeout(predict, ANNOTATION_INTERVAL_MS);
     return () => clearTimeout(detectionTimeoutRef.current);
   }, []); // Make sure the effect runs only once
 
+  const cameraFeedElement = getCameraFeedElement();
+  if (!cameraFeedElement || !cameraFeedElement.complete) {
+    return null;
+  }
+
   const createAnnotationElements = prediction => {
     const { bbox, score } = prediction;
 
-    const imageHeight = getCameraFeedElement().height;
     const annotationElementStyle = {
       left: bbox[0],
       top: bbox[1],
       width: bbox[2],
-      height: Math.min(bbox[3], imageHeight - bbox[1] - 5) // make sure annotation doesn't go outside image
+      height: Math.min(bbox[3], cameraFeedElement.height - bbox[1] - 5) // make sure annotation doesn't go outside image
     };
 
     return (
