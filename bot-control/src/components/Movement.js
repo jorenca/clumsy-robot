@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import GamepadControl from './GamepadControl.js';
-import Planner from './Planner';
+//import Planner from './Planner';
 import './Movement.scss';
 import gamepadIcon from './gamepad_icon.png';
 
@@ -13,7 +13,7 @@ export default function Movement({ sharedTelemetry }) {
     return fetch(`/move/${left}/${right}/${speedToUse}`);
   };
   const cstop = () => fetch('/cstop');
-  const cTurn = (angle) => fetch(`/motor_cmd/C ${angle} ;`);
+//  const cTurn = (angle) => fetch(`/motor_cmd/C ${angle} ;`);
 
   return (
     <div className="movement-container">

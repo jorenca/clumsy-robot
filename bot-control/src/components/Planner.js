@@ -76,7 +76,7 @@ function PlannerModal({ commands }) {
         Planned steps:<br />
         {plan.map((step, i) =>
           <span
-            className={"plan-step" + (i == runningIndex ? ' active' : '')}
+            className={"plan-step" + (i === runningIndex ? ' active' : '')}
             key={i}>
             {i + '. ' + step}
           </span>

@@ -4,7 +4,7 @@ import './CameraFeed.scss';
 const CAMERA_FEED_ADDR = window.location.origin.replace(':3000', ':8000') + '/stream.mjpg';
 const CameraFeed = ({ proximity }) =>
 <div className="feed-container">
-  <img alt="feed" src={CAMERA_FEED_ADDR} />
+  <img crossOrigin="anonymous" id="camera-feed" alt="feed" src={CAMERA_FEED_ADDR} />
   <ProximityGauge proximity={Number.parseInt(proximity || '255')} />
 </div>;
 

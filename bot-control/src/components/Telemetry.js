@@ -1,6 +1,6 @@
 import React from 'react';
-import Compass from './telemetry/Compass';
-import XYPlot from './telemetry/XYPlot';
+//import Compass from './telemetry/Compass';
+//import XYPlot from './telemetry/XYPlot';
 import Battery from './telemetry/Battery';
 import './Telemetry.scss';
 
@@ -25,27 +25,27 @@ class Telemetry extends React.Component {
   }
 
   render() {
-    const { heading, acceleration, temperature, battery } = this.state;
+    const { battery } = this.state;
     return (
       <div className="telemetry-container">
         Telemetry
         <hr/>
         <Battery battery={battery} />
-        <hr/>
-        <div className="telemetry-row">
-          <Compass heading={heading} />
-          <XYPlot {...acceleration} bound={1024} />
-        </div>
-
-        <div style={{ textAlign: 'left' }}>
-          <div style={{ width: '100px' }}>Heading: {heading}</div>
-          <div style={{ backgroundColor: temperature < 35 ? '' : 'orange'}}>
-            Temperature: {temperature}C
-          </div>
-        </div>
       </div>
     );
   }
 }
+
+//        <hr/>
+//        <div className="telemetry-row">
+//          <Compass heading={heading} />
+//          <XYPlot {...acceleration} bound={1024} />
+//        </div>
+//        <div style={{ textAlign: 'left' }}>
+//          <div style={{ width: '100px' }}>Heading: {heading}</div>
+//          <div style={{ backgroundColor: temperature < 35 ? '' : 'orange'}}>
+//            Temperature: {temperature}C
+//          </div>
+//        </div>
 
 export default Telemetry;
