@@ -1,7 +1,8 @@
 .ml-annotation-container {
   .ml-activate-buttons {
-    position: absolute;
+    top: 0;
     left: 25px;
+    z-index: 10;
 
     button {
       display: block;
@@ -20,5 +21,16 @@
       color: #FFF;
       margin: 0;
     }
+  }
+
+  #bodypix-mask-canvas {
+    position: absolute;
+    z-index: 1;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .ml-activate-buttons {
+    position: absolute;
   }
 }
