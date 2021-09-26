@@ -15,4 +15,10 @@
     top: 0;
     right: 0;
   }
+
+  .feed-container img {
+    position: absolute;
+    z-index: -99;
+    top: 0;
+  }
 }
