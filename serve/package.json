@@ -9,7 +9,7 @@
   "author": "Georgi Gaydarov",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "express-sse": "^0.5.0",
     "i2c-bus": "^4.0.10",
     "ina219-async": "^1.0.2",
